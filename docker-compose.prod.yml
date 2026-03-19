@@ -1,0 +1,18 @@
+services:
+  frontend:
+    container_name: online_library_prod_frontend
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  backend:
+    container_name: online_library_prod_backend
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile.prod
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

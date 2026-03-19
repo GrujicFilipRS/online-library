@@ -1,17 +1,31 @@
 services:
   frontend:
-    container_name: online_library_dev_client
+    container_name: online_library_dev_frontend
     build:
-      context: ./client
+      context: ./src/frontend
       dockerfile: Dockerfile.dev
-    working_dir: /app
     volumes:
-      - ./client:/app
+      - ./src/frontend:/app
       - /app/node_modules
     ports:
       - "5173:5173"
     env_file:
-      - ./client/.env
+      - ./.env
     environment:
       - CHOKIDAR_USEPOLLING=true
     command: npm run dev -- --host
+
+  backend:
+    container_name: online_library_dev_backend
+    build:
+      context: .
+      dockerfile: ./src/backend/Dockerfile.dev
+    volumes:
+      - ./src/backend:/app/src/backend
+      - uv-venv:/app/.venv
+    ports:
+      - "8000:8000"
+    command: uv run fastapi dev src/backend/main.py --host 0.0.0.0 --port 8000
+
+volumes:
+  uv-venv:
