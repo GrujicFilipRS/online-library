@@ -13,8 +13,8 @@ from .logging import StructuredLogger
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     """
-    Контекстный менеджер для управления временем жизни приложения FastAPI.
-    Инициализирует и закрывает ресурсы при старте и остановке приложения.
+    Context manager for controlling the lifespan of the FastAPI app.
+    Initializes and closes resources at the start and the end of the app.
     """
     StructuredLogger.setup()
     try:

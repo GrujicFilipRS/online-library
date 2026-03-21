@@ -8,7 +8,7 @@ from .....shared.utils import Database
 
 
 class DBSessionProvider(Provider):
-    """Провайдер для внедрения сессий базы данных в приложение."""
+    """Provider for embedding the database session in the application"""
 
     def __init__(self, db_sess: AsyncSession | None = None):
         super().__init__()
@@ -17,8 +17,8 @@ class DBSessionProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def db_sess(self) -> AsyncGenerator[AsyncSession, Any]:
         """
-        Предоставляет асинхронную сессию базы данных для каждого запроса.
-        Используется внутри контекстного менеджера async with.
+        Provides an asynchronous database session for each request.
+        Used inside the async with context manager.
         """
         if self._db_sess:
             yield self._db_sess

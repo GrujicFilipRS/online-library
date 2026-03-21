@@ -3,8 +3,8 @@ from sqlalchemy.orm import DeclarativeBase
 
 class Base(DeclarativeBase):
     """
-    Базовый класс для всех моделей.
-    Все модели должны наследоваться от этого класса.
+    Base class for all models
+    All models must be inherited from this class
     """
 
     pass
