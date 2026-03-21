@@ -7,9 +7,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-# from ....app.core.domain.exceptions import (
-#    DomainError,
-# )
+from ....app.core.domain.exceptions import (
+    DomainError,
+)
 from .logging import StructuredLogger
 from .traceid_middleware import TraceIDMiddleware, trace_id_var
 
@@ -55,12 +55,12 @@ def _payload(
     }
 
 
-# def map_domain_error(exc: DomainError) -> AppError:
-#    return AppError(
-#        code=exc.__class__.__name__,
-#        message=exc.message,
-#        status_code=400,
-#    )
+def map_domain_error(exc: DomainError) -> AppError:
+    return AppError(
+        code=exc.__class__.__name__,
+        message=exc.message,
+        status_code=400,
+    )
 
 
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
@@ -134,9 +134,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     )
 
 
-# async def domain_exception_handler(request: Request, exc: DomainError) -> JSONResponse:
-#    app_error = map_domain_error(exc)
-#    return await app_error_handler(request, app_error)
+async def domain_exception_handler(request: Request, exc: DomainError) -> JSONResponse:
+    app_error = map_domain_error(exc)
+    return await app_error_handler(request, app_error)
 
 
 def setup_error_handling(app: FastAPI) -> None:
@@ -146,4 +146,4 @@ def setup_error_handling(app: FastAPI) -> None:
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)  # type: ignore
     app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
     app.add_exception_handler(Exception, unhandled_exception_handler)
-    # app.add_exception_handler(DomainError, domain_exception_handler)  # type: ignore
+    app.add_exception_handler(DomainError, domain_exception_handler)  # type: ignore

@@ -1,13 +1,61 @@
-class DomainError(BaseException): ...
+from dataclasses import dataclass
 
 
-class InvalidLengthError(DomainError): ...
+@dataclass
+class DomainError(Exception):
+    """
+    Базовая доменная ошибка.
+    Все доменные ошибки должны наследоваться от этого класса.
+    """
+
+    message: str = "DomainError"
 
 
-class InvalidRoleError(DomainError): ...
+@dataclass
+class InsufficientAmountError(DomainError):
+    message = "InsufficientAmountError"
 
 
-class UserAlreadyExistsError(DomainError): ...
+@dataclass
+class InvalidLengthError(DomainError):
+    message = "InvalidLengthError"
 
 
-class UserNotFoundError(DomainError): ...
+@dataclass
+class UserAlreadyExistsError(DomainError):
+    message = "UserAlreadyExistsError"
+
+
+@dataclass
+class UserNotFoundError(DomainError):
+    message = "UserNotFoundError"
+
+
+@dataclass
+class InvalidRoleError(DomainError):
+    message = "InvalidRoleError"
+
+
+@dataclass
+class InvalidISSError(DomainError):
+    message = "InvalidISSError"
+
+
+@dataclass
+class TokenExpiredError(DomainError):
+    message = "TokenExpiredError"
+
+
+@dataclass
+class TokenDecodeError(DomainError):
+    message = "TokenDecodeError"
+
+
+@dataclass
+class BadTokenSignatureError(DomainError):
+    message = "BadTokenSignatureError"
+
+
+@dataclass
+class InvalidCredentialsError(DomainError):
+    message = "InvalidCredentialsError"
