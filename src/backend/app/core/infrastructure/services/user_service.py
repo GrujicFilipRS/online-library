@@ -1,0 +1,31 @@
+from uuid import UUID
+
+from ...domain.exceptions import UserAlreadyExistsError, UserNotFoundError
+from ...domain.models import User
+from ...domain.ports.repositories import BaseUserRepository
+from ...domain.ports.services import BaseUserService
+
+
+class UserService(BaseUserService):
+    def __init__(self, user_repo: BaseUserRepository):
+        self.user_repo = user_repo
+
+    async def create_user(self, username: str, hashed_password: str) -> User:
+        existing = await self.user_repo.get_by_username(username)
+        if existing:
+            raise UserAlreadyExistsError("username already taken")
+        user = User.create(username, hashed_password)
+        await self.user_repo.save(user)
+        return user
+
+    async def get_user_by_id(self, user_id: UUID) -> User:
+        user = await self.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError("user with given id not found")
+        return user
+
+    async def get_user_by_username(self, username: str) -> User:
+        user = await self.user_repo.get_by_username(username)
+        if user is None:
+            raise UserNotFoundError("user with given username not found")
+        return user
