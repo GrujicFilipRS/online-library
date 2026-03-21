@@ -5,12 +5,12 @@ from ...models import AuthAccount
 from ...value_objects import Provider, ProviderUserId
 
 
-class BaseAuthAccountRepository(ABC):
+class BaseAuthAccountService(ABC):
     @abstractmethod
-    async def get_by_id(self, account_id: UUID) -> AuthAccount | None: ...
+    async def get_by_id(self, auth_account_id: UUID) -> AuthAccount | None: ...
 
     @abstractmethod
-    async def get_by_user_id(self, user_id: UUID) -> list[AuthAccount] | None: ...
+    async def get_by_user_id(self, user_id: UUID) -> list[AuthAccount]: ...
 
     @abstractmethod
     async def get_by_provider(
