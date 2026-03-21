@@ -16,8 +16,8 @@ from .logging import StructuredLogger
 
 class Database:
     """
-    Класс для управления подключением к базе данных с использованием SQLAlchemy.
-    Предоставляет методы для инициализации, получения сессий и закрытия соединения.
+    Class for controlling the connection to the database, using SQLAlchemy.
+    Provides methods for initializing, receiving sessions, and closing connections.
     """
 
     _engine: AsyncEngine | None = None
@@ -26,16 +26,16 @@ class Database:
     @classmethod
     async def init(cls) -> None:
         """
-        Инициализирует базу данных, создавая движок и фабрику сессий.
+        Initializes the database, creating an engine and a session factory.
         """
         if cls._engine is None:
             cls._engine = create_async_engine(
                 Config.DATABASE_URL,
                 echo=False,
                 future=True,
-                pool_size=20,  # минимальное число соединений в пуле
-                max_overflow=10,  # дополнительные соединения сверх pool_size, если нужно
-                pool_timeout=10,  # время ожидания получения соединения (в секундах)
+                pool_size=20,  # minimal amount of connections in the pool
+                max_overflow=10,  # additional connections beyond pool_size, if necessary
+                pool_timeout=10,  # expected time of successful connection createion (in seconds)
                 pool_use_lifo=True,
             )
             cls._SessionLocal = async_sessionmaker(
@@ -47,8 +47,8 @@ class Database:
     @asynccontextmanager
     async def get_session(cls) -> AsyncGenerator[AsyncSession, Any]:
         """
-        Создает и возвращает асинхронную сессию SQLAlchemy.
-        Используется внутри контекстного менеджера async with.
+        Creates and returns an asynchronous SQLAlchemy session.
+        Used inside the async with context manager.
         """
         if cls._SessionLocal is None:
             raise RuntimeError(
@@ -58,13 +58,13 @@ class Database:
         async with cls._SessionLocal() as session:
             StructuredLogger.info("session_created")
             async with session.begin():
-                yield session  # Сессия создается здесь
+                yield session  # the session is created here
 
     @classmethod
     async def dependency(cls) -> AsyncGenerator[AsyncSession, Any]:
         """
-        Зависимость для FastAPI — отдаёт сессию БД.
-        Используется в Depends(get_db_session).
+        Dependency for FastAPI - gives away the DB session.
+        Used in Depends(get_db_session).
         """
         async with cls.get_session() as session:
             yield session
@@ -72,7 +72,7 @@ class Database:
     @classmethod
     async def close(cls) -> None:
         """
-        Закрывает соединение с базой данных.
+        Closes the connection to the database
         """
         if cls._engine:
             await cls._engine.dispose()
@@ -81,7 +81,7 @@ class Database:
     @classmethod
     async def test_connection(cls) -> bool:
         """
-        Тестирует соединение с базой данных.
+        Tests the connection to the database
         """
         try:
             async with cls.get_session() as session:

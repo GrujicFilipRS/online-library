@@ -11,26 +11,26 @@ from typing import Any
 
 from loguru import logger
 
-# Контекст для trace_id и старта
+# Context for trace_id and start_time
 trace_id_var = contextvars.ContextVar("trace_id", default=None)
 start_time_var = contextvars.ContextVar("time_start", default=None)
 
 
 class StructuredLogger:
     """
-    Структурированный логгер с поддержкой контекста и упрощением объектов.
-    Логирует события в формате JSON с дополнительными полями контекста,
-    такими как trace_id и время с момента старта.
+    Structured logger with context support and simplified objects.
+    Logs events in JSON format with additional context fields,
+    such as trace_id and time passed from startup.
     """
 
     @staticmethod
     def _get_trace_id() -> str:
-        """Возвращает текущий trace_id или генерирует новый."""
+        """Returns the current trace_id or generates a new one"""
         return trace_id_var.get() or str(uuid.uuid4())
 
     @staticmethod
     def _add_context(kwargs: dict[Any, Any]) -> dict[str, Any]:
-        """Добавляет контекстные поля к логируемым данным."""
+        """Adds context fields to log data."""
         start_time = start_time_var.get() or time.time()
         return {
             "trace_id": StructuredLogger._get_trace_id(),
@@ -40,32 +40,32 @@ class StructuredLogger:
 
     @staticmethod
     def info(event: str, **kwargs: Any) -> None:
-        """Логирует информационное сообщение с контекстом."""
+        """Logs info message with context"""
         logger.bind(**StructuredLogger._add_context(kwargs)).info(event)
 
     @staticmethod
     def warning(event: str, **kwargs: Any) -> None:
-        """Логирует предупреждающее сообщение с контекстом."""
+        """Logs warning message with context"""
         logger.bind(**StructuredLogger._add_context(kwargs)).warning(event)
 
     @staticmethod
     def error(event: str, **kwargs: Any) -> None:
-        """Логирует сообщение об ошибке с контекстом."""
+        """Logs error message with context"""
         logger.bind(**StructuredLogger._add_context(kwargs)).error(event)
 
     @staticmethod
     def exception(event: str, **kwargs: Any) -> None:
-        """Логирует исключение с контекстом."""
+        """Logs exceptions with context"""
         logger.bind(**StructuredLogger._add_context(kwargs)).exception(event)
 
     @staticmethod
     def debug(event: str, **kwargs: Any) -> None:
-        """Логирует отладочное сообщение с контекстом."""
+        """Logs debug message with exceptions"""
         logger.bind(**StructuredLogger._add_context(kwargs)).debug(event)
 
     @staticmethod
     def simplify(value: Any, max_depth: int = 5) -> Any:
-        """Упрощает объект для логирования, избегая циклических ссылок и ограничивая глубину."""
+        """Simplifies the logging object, avoiding cyclic links and limiting link depth."""
         return StructuredLogger._simplify_internal(
             value, visited_ids=set(), depth=0, max_depth=max_depth
         )
@@ -74,7 +74,7 @@ class StructuredLogger:
     def _simplify_internal(
         value: Any, visited_ids: set[int], depth: int, max_depth: int
     ) -> Any:
-        """Внутренняя рекурсивная функция для упрощения объектов."""
+        """Inner recursive function for object simplification"""
         if depth > max_depth:
             return f"<max-depth-exceeded-{type(value).__name__}>"
 
@@ -125,13 +125,13 @@ class StructuredLogger:
 
     @staticmethod
     def setup() -> None:
-        """Настраивает логгер для структурированного логирования в формате JSON."""
+        """Configures the logger for structured logging in JSON format."""
         global logger
         logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
         logger.remove()
 
         def serialize(record: Any) -> str:
-            """Сериализует запись лога в JSON-формат."""
+            """Serializes the log entry into JSON"""
             return json.dumps(
                 {
                     "timestamp": record["time"].timestamp(),
@@ -149,12 +149,12 @@ class StructuredLogger:
                 }
             )
 
-        # Поверх patch добавляем в extra.serialized
+        # On top of the patch, add it to extra.serialized
         logger = logger.patch(
             lambda record: record["extra"].update({"serialized": serialize(record)})
         )
 
-        # Используем формат с {extra[serialized]} как JSON
+        # Use the format with {extra[serialized]} as JSON
         logger.add(
             sys.stdout,
             level="INFO",
