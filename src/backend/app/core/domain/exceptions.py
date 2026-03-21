@@ -59,3 +59,14 @@ class BadTokenSignatureError(DomainError):
 @dataclass
 class InvalidCredentialsError(DomainError):
     message = "InvalidCredentialsError"
+
+
+@dataclass
+class InvalidAuthProviderError(DomainError):
+    message = "InvalidAuthProviderError"
+
+
+@dataclass
+class InvalidAuthProviderUserIdError(DomainError):
+    message = "InvalidProviderUserIdError"
+

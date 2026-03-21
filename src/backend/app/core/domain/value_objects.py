@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 
-from .exceptions import InvalidLengthError, InvalidRoleError
+from .exceptions import (
+    InvalidLengthError,
+    InvalidProviderError,
+    InvalidProviderUserIdError,
+    InvalidRoleError,
+)
 
 
 @dataclass
@@ -29,3 +34,24 @@ class UserRole:
             raise InvalidRoleError(
                 f"user role must be one of the following: {', '.join(possible_roles)}"
             )
+
+
+@dataclass(frozen=True)
+class Provider:
+    value: str
+
+    def __post_init__(self):
+        possible_providers = ("google", "github", "apple")
+        if self.value not in possible_providers:
+            raise InvalidProviderError(
+                f"Auth provider must be on of the following: {', '.join(possible_providers)}"
+            )
+
+
+@dataclass(frozen=True)
+class ProviderUserId:
+    value: str
+
+    def __post_init__(self):
+        if not self.value.strip():
+            raise InvalidProviderUserIdError("Auth provider user id must not be empty")
