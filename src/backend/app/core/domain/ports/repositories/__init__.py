@@ -1,3 +1,4 @@
+from .base_auth_account_repo import BaseAuthAccountRepository
 from .base_user_repo import BaseUserRepository
 
-__all__ = ["BaseUserRepository"]
+__all__ = ["BaseUserRepository", "BaseAuthAccountRepository"]
