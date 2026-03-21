@@ -24,7 +24,11 @@ class DBUser(Base):
         String(255),
         nullable=True,  # Nullable because of possible Oauth registration
     )
-    role: Mapped[str] = mapped_column(String(), nullable=False, default="User")
+    role: Mapped[str] = mapped_column(
+        String(),
+        nullable=False,
+        default="User",
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,

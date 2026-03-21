@@ -26,7 +26,7 @@ class User:
         """new user factory"""
         user_id = uuid4()
         username_ = UserName(value=username)
-        balance = UserRole(value="User")
+        role = UserRole(value="User")
         created_at = datetime.now()
 
-        return cls(user_id, username_, hashed_password, balance, created_at)
+        return cls(user_id, username_, hashed_password, role, created_at)
