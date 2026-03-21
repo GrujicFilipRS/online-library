@@ -8,7 +8,7 @@ from .app.core.infrastructure.di.providers import (
     DBSessionProvider,
 )
 from .app.core.presentation.api.v1 import api_v1_router
-from .app.shared.utils import TraceIDMiddleware, lifespan
+from .app.shared.utils import lifespan, setup_error_handling
 
 app = FastAPI(
     lifespan=lifespan,
@@ -28,8 +28,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(TraceIDMiddleware)
-
 app.include_router(api_v1_router)
 
 container = make_async_container(
@@ -37,3 +35,5 @@ container = make_async_container(
 )
 
 setup_dishka(container=container, app=app)
+
+setup_error_handling(app)
