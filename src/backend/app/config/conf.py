@@ -2,7 +2,7 @@
 # It checks if the required environment variables are loaded,
 # as well as init a class that's used to store environment variables
 
-from os import environ, getenv
+from os import getenv
 
 from dotenv import load_dotenv
 
@@ -17,11 +17,13 @@ REQUIRED_ENV_VARS = (
     "APP_SECRET_KEY",
 )
 
+
 def require_env(name: str) -> str:
     value = getenv(name)
     if value is None:
         raise RuntimeError(f"Missing required env var: {name}")
     return value
+
 
 raise_exc: bool = False
 missing_vars: list[str] = []
