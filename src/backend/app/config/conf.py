@@ -17,11 +17,19 @@ REQUIRED_ENV_VARS = (
     "APP_SECRET_KEY",
 )
 
+def require_env(name: str) -> str:
+    value = getenv(name)
+    if value is None:
+        raise RuntimeError(f"Missing required env var: {name}")
+    return value
+
 raise_exc: bool = False
 missing_vars: list[str] = []
 
 for var in REQUIRED_ENV_VARS:
-    if var not in environ.keys():
+    try:
+        require_env(var)
+    except RuntimeError:
         raise_exc = True
         missing_vars.append(var)
 
@@ -35,17 +43,17 @@ class Config:
     def __new__(cls):
         raise TypeError("Config is a static configuration class")
 
-    DATABASE_URL_DEV = getenv("DATABASE_URL_DEV", "")
-    DATABASE_URL_PROD = getenv("DATABASE_URL_PROD", "")
-    PRJ_DEV_MODE = getenv("PRJ_DEV_MODE", "true").lower() == "true"
+    DATABASE_URL_DEV: str = require_env("DATABASE_URL_DEV")
+    DATABASE_URL_PROD: str = require_env("DATABASE_URL_PROD")
+    PRJ_DEV_MODE: bool = getenv("PRJ_DEV_MODE", "true").lower() == "true"
 
-    APP_NAME = getenv("APP_NAME", "")
-    APP_DESCRIPTION = getenv("APP_DESCRIPTION", "")
-    APP_VERSION = getenv("APP_VERSION", "")
-    ENABLE_API_DOCS = getenv("ENABLE_API_DOCS", "true").lower() == "true"
+    APP_NAME: str = require_env("APP_NAME")
+    APP_DESCRIPTION: str = require_env("APP_DESCRIPTION")
+    APP_VERSION: str = require_env("APP_VERSION")
+    ENABLE_API_DOCS: bool = getenv("ENABLE_API_DOCS", "true").lower() == "true"
 
-    DATABASE_URL = DATABASE_URL_DEV if PRJ_DEV_MODE else DATABASE_URL_PROD
-    FRONTEND_URL = getenv("FRONTEND_URL", "http://localhost:5173")
+    DATABASE_URL: str = DATABASE_URL_DEV if PRJ_DEV_MODE else DATABASE_URL_PROD
+    FRONTEND_URL: str = getenv("FRONTEND_URL", "http://localhost:5173")
 
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 24))
-    APP_SECRET_KEY = getenv("SECRET_KEY", "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 24))
+    APP_SECRET_KEY: str = require_env("APP_SECRET_KEY")
