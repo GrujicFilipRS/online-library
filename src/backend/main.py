@@ -6,6 +6,9 @@ from starlette.middleware.cors import CORSMiddleware
 from .app.config import Config
 from .app.core.infrastructure.di.providers import (
     DBSessionProvider,
+    RepositoryProvider,
+    ServiceProvider,
+    UnitOfWorkFactoryProvider,
 )
 from .app.core.presentation.api.v1 import api_v1_router
 from .app.shared.utils import lifespan, setup_error_handling
@@ -32,6 +35,9 @@ app.include_router(api_v1_router)
 
 container = make_async_container(
     DBSessionProvider(),
+    RepositoryProvider(),
+    ServiceProvider(),
+    UnitOfWorkFactoryProvider(),
 )
 
 setup_dishka(container=container, app=app)
