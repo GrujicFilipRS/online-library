@@ -5,7 +5,7 @@ from ...repositories.sqlal import SqlAlchemyUserRepository
 
 
 class RepositoryProvider(Provider):
-    """Провайдер для внедрения репозиториев в приложение."""
+    """Provider for embedding repositories in the application."""
 
     @provide(scope=Scope.REQUEST)
     async def user_repo(self, db_sess: AsyncSession) -> SqlAlchemyUserRepository:

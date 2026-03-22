@@ -7,7 +7,7 @@ from ...units_of_work.sqlal import SqlAlchemyUserUnitOfWork
 
 
 class UnitOfWorkFactoryProvider(Provider):
-    """Провайдер для внедрения фабрик рабочих единиц в приложение."""
+    """Provider for implementing units of work in the application"""
 
     @provide(scope=Scope.REQUEST)
     async def user_uow_factory(

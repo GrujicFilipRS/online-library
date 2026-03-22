@@ -19,13 +19,13 @@ from .logging import StructuredLogger
 
 
 class AuthUtils:
-    """Класс для работы с аутентификацией пользователей."""
+    """Class for working with the authentication of users"""
 
     key = OctKey.import_key(Config.APP_SECRET_KEY)
 
     @staticmethod
     async def create_token(user_id: UUID) -> str:
-        """Создать токен для пользователя."""
+        """Returns the token for the user"""
         now = datetime.now(UTC)
         exp = (now + timedelta(minutes=Config.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()
         iat = (now - timedelta(minutes=1)).timestamp()
@@ -44,7 +44,7 @@ class AuthUtils:
 
     @staticmethod
     async def decode_token(token: str) -> Token:
-        """Декодировать токен."""
+        """Decodes and returns the Token"""
         try:
             decoded_token = decode(
                 token,
@@ -93,7 +93,7 @@ class AuthUtils:
 
     @staticmethod
     async def get_user_id_from_token(token: str) -> UUID:
-        """Получить информацию о пользователе из токена."""
+        """Gets user id from token"""
         payload = await AuthUtils.decode_token(token)
 
         user_id = payload.claims.get("sub")
@@ -105,7 +105,7 @@ class AuthUtils:
 
     @staticmethod
     async def verify_password(password: str, hashed_password: str) -> None:
-        """Проверить пароль пользователя."""
+        """Verifies users password"""
 
         try:
             is_valid = bcrypt.checkpw(
@@ -124,5 +124,5 @@ class AuthUtils:
 
     @staticmethod
     async def hash_password(password: str) -> str:
-        """Хеширование пароля"""
+        """Password hashing"""
         return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
