@@ -4,8 +4,8 @@ from dataclasses import dataclass
 @dataclass
 class DomainError(Exception):
     """
-    Базовая доменная ошибка.
-    Все доменные ошибки должны наследоваться от этого класса.
+    Base domain error.
+    All domain errors must be inherited from this class.
     """
 
     message: str = "DomainError"
