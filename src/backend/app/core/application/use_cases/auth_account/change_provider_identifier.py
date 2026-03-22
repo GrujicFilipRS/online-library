@@ -2,7 +2,7 @@ from collections.abc import Callable
 from uuid import UUID
 
 from ...domain.ports.units_of_work import BaseAuthAccountUnitOfWork
-from ...domain.value_objects import Provider, ProviderUserId
+from ...domain.value_objects import AuthProvider, AuthProviderUserId
 
 
 class ChangeProviderIdentifierUseCase:
@@ -12,10 +12,12 @@ class ChangeProviderIdentifierUseCase:
         self.auth_account_uow_factory = auth_account_uow_factory
 
     async def execute(
-        self, user_id: UUID, provider: Provider, new_provider_user_id: ProviderUserId
+        self,
+        user_id: UUID,
+        provider: AuthProvider,
+        new_provider_user_id: AuthProviderUserId,
     ) -> None:
         async with self.auth_account_uow_factory() as uow:
             await uow.auth_account_service.change_provider_identifier(
                 user_id, provider, new_provider_user_id
             )
-            await uow.commit()
