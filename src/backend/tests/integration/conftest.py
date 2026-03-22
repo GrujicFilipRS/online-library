@@ -11,6 +11,9 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.backend.app.core.infrastructure.db_models import *
+from src.backend.app.core.infrastructure.repositories.sqlal import (
+    SqlAlchemyUserRepository,
+)
 from src.backend.app.shared.utils import Base
 
 
@@ -64,3 +67,8 @@ async def db_sess(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, Any]
                 )
 
         await transaction.rollback()
+
+
+@pytest.fixture
+async def user_repo(db_sess):
+    return SqlAlchemyUserRepository(db_sess)
