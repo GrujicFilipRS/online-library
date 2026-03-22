@@ -49,7 +49,7 @@ class SqlAlchemyUserRepository(BaseUserRepository):
             update(DBUser)
             .where(DBUser.user_id == user.user_id)
             .values(
-                username=user.username,
+                username=user.username.value,
                 hashed_password=user.hashed_password,
                 role=user.role.value,
             )

@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: astral-sh/setup-uv@v7.3.0
+      - run: uv python install
+      - run: uv sync
+      - run: uv run pytest
+        env:
+          DATABASE_URL_DEV: "sqlite+aiosqlite:///./.db"
+          DATABASE_URL_PROD: "postgresql+asyncpg://admin:admin@127.0.0.1:5432/app"
+          PRJ_DEV_MODE: "true"
+          APP_NAME: "online_library"
+          APP_DESCRIPTION: "with <3 by palacinke i kafa"
+          APP_VERSION: "0.1.0"
+          APP_SECRET_KEY: "ril73-is-a-very-secret-key-that-is-at-least-32-bytes-long"

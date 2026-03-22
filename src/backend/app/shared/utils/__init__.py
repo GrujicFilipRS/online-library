@@ -1,3 +1,4 @@
+from .auth import AuthUtils
 from .base import Base
 from .database import Database
 from .error_handler import setup_error_handling
@@ -6,6 +7,7 @@ from .logging import StructuredLogger, start_time_var, trace_id_var
 from .traceid_middleware import TraceIDMiddleware
 
 __all__ = [
+    "AuthUtils",
     "Base",
     "Database",
     "setup_error_handling",
