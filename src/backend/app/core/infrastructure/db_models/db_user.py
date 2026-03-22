@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.types import UUID as UUIDPG
+from sqlalchemy.types import UUID as UUID_ORM
 
 from ....shared.utils import Base
 
@@ -12,7 +12,7 @@ class DBUser(Base):
     __tablename__ = "users"
 
     user_id: Mapped[UUID] = mapped_column(
-        UUIDPG(as_uuid=True),
+        UUID_ORM(as_uuid=True),
         primary_key=True,
         default=uuid4,
     )
@@ -24,7 +24,11 @@ class DBUser(Base):
         String(255),
         nullable=True,  # Nullable because of possible Oauth registration
     )
-    role: Mapped[str] = mapped_column(String(), nullable=False, default="User")
+    role: Mapped[str] = mapped_column(
+        String(),
+        nullable=False,
+        default="User",
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
