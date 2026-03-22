@@ -20,11 +20,11 @@ class DBAuthAccount(Base):
         ForeignKey("users.user_id"),
         nullable=False,
     )
-    provider: Mapped[str] = mapped_column(
+    auth_provider: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
     )
-    provider_user_id: Mapped[str] = mapped_column(
+    auth_provider_user_id: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
     )
