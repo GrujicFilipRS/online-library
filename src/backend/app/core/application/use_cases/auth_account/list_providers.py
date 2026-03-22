@@ -14,5 +14,4 @@ class ListProvidersUseCase:
     async def execute(self, user_id: UUID) -> list[AuthAccount]:
         async with self.auth_account_uow_factory() as uow:
             auth_accounts = await uow.auth_account_service.list_user_providers(user_id)
-            await uow.commit()
             return auth_accounts
