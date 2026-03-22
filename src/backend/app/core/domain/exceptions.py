@@ -68,5 +68,20 @@ class InvalidAuthProviderError(DomainError):
 
 @dataclass
 class InvalidAuthProviderUserIdError(DomainError):
-    message = "InvalidProviderUserIdError"
+    message = "InvalidAuthProviderUserIdError"
+
+
+@dataclass
+class AuthProviderAccountAlreadyInUseError(DomainError):
+    message = "AuthProviderAccountAlreadyInUseError"
+
+
+@dataclass
+class AuthProviderNotLinkedError(DomainError):
+    message = "AuthProviderNotLinkedError"
+
+
+@dataclass
+class AuthProviderUnlinkNotSafeError(DomainError):
+    message = "AuthProviderUnlinkNotSafeError"
 
