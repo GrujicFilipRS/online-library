@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from ....shared.utils import AuthUtils
 from ...domain.exceptions import UserAlreadyExistsError, UserNotFoundError
 from ...domain.models import User
 from ...domain.ports.repositories import BaseUserRepository
@@ -10,10 +11,11 @@ class UserService(BaseUserService):
     def __init__(self, user_repo: BaseUserRepository):
         self.user_repo = user_repo
 
-    async def create_user(self, username: str, hashed_password: str) -> User:
+    async def create_user(self, username: str, password: str) -> User:
         existing = await self.user_repo.get_by_username(username)
-        if existing:
+        if existing is not None:
             raise UserAlreadyExistsError("username already taken")
+        hashed_password = await AuthUtils.hash_password(password)
         user = User.create(username, hashed_password)
         await self.user_repo.save(user)
         return user

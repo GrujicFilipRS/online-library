@@ -17,7 +17,7 @@ class InMemoryUserRepository(BaseUserRepository):
 
     async def get_by_username(self, username: str) -> User | None:
         for user in self.inm_storage.users:
-            if user.username == username:
+            if user.username.value == username:
                 return user
         return None
 
