@@ -5,10 +5,10 @@ from pydantic import BaseModel, ConfigDict
 
 
 class AuthAccountDTO(BaseModel):
-    id: UUID
+    auth_account_id: UUID
     user_id: UUID
-    provider: str
-    provider_user_id: str
+    auth_provider: str
+    auth_provider_user_id: str
     created_at: datetime
 
     model_config = ConfigDict(
