@@ -7,18 +7,29 @@ from ...value_objects import Provider, ProviderUserId
 
 class BaseAuthAccountService(ABC):
     @abstractmethod
-    async def get_by_id(self, auth_account_id: UUID) -> AuthAccount | None: ...
+    async def link_provider_to_user(
+        self, user_id: UUID, provider: Provider, provider_user_id: ProviderUserId
+    ) -> AuthAccount: ...
 
     @abstractmethod
-    async def get_by_user_id(self, user_id: UUID) -> list[AuthAccount]: ...
-
-    @abstractmethod
-    async def get_by_provider(
+    async def authenticate_via_provider(
         self, provider: Provider, provider_user_id: ProviderUserId
-    ) -> AuthAccount | None: ...
+    ) -> AuthAccount: ...
 
     @abstractmethod
-    async def save(self, auth_account: AuthAccount) -> None: ...
+    async def unlink_provider_from_user(
+        self, user_id: UUID, provider: Provider
+    ) -> None: ...
 
     @abstractmethod
-    async def delete(self, account_id: UUID) -> None: ...
+    async def list_user_providers(self, user_id: UUID) -> list[AuthAccount]: ...
+
+    @abstractmethod
+    async def change_provider_identifier(
+        self, user_id: UUID, provider: Provider, new_identifier: ProviderUserId
+    ) -> None: ...
+
+    @abstractmethod
+    async def is_unlink_safe(self, user_id: UUID, provider: Provider) -> bool: ...
+
+    """check if user has any other ways to authenticate after unlinking"""
