@@ -59,28 +59,3 @@ class BadTokenSignatureError(DomainError):
 @dataclass
 class InvalidCredentialsError(DomainError):
     message = "InvalidCredentialsError"
-
-
-@dataclass
-class InvalidAuthProviderError(DomainError):
-    message = "InvalidAuthProviderError"
-
-
-@dataclass
-class InvalidAuthProviderUserIdError(DomainError):
-    message = "InvalidAuthProviderUserIdError"
-
-
-@dataclass
-class AuthProviderAccountAlreadyInUseError(DomainError):
-    message = "AuthProviderAccountAlreadyInUseError"
-
-
-@dataclass
-class AuthProviderNotLinkedError(DomainError):
-    message = "AuthProviderNotLinkedError"
-
-
-@dataclass
-class AuthProviderUnlinkNotSafeError(DomainError):
-    message = "AuthProviderUnlinkNotSafeError"

@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.types import UUID as UUID_ORM
+from sqlalchemy.types import UUID as UUIDPG
 
 from ....shared.utils import Base
 
@@ -12,7 +12,7 @@ class DBUser(Base):
     __tablename__ = "users"
 
     user_id: Mapped[UUID] = mapped_column(
-        UUID_ORM(as_uuid=True),
+        UUIDPG(as_uuid=True),
         primary_key=True,
         default=uuid4,
     )
