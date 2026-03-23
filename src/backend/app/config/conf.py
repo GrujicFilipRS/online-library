@@ -35,7 +35,7 @@ for var in REQUIRED_ENV_VARS:
     try:
         require_env(var)
     except RuntimeError:
-        if TEST_MODE is None:
+        if TEST_MODE is not True:
             raise_exc = True
         missing_vars.append(var)
 
