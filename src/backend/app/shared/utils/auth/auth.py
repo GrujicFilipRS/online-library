@@ -162,7 +162,7 @@ class AuthUtils:
         return UUID(user_id)
 
     @classmethod
-    def _sign_csrf(cls, sess_id: str, nonce: str) -> str:
+    async def _sign_csrf(cls, sess_id: str, nonce: str) -> str:
         msg = f"{sess_id}.{nonce}".encode()
         sig = new(
             config.APP_CSRF_SECRET.get_secret_value().encode("utf-8"), msg, "sha256"
@@ -175,19 +175,19 @@ class AuthUtils:
         return csrf
 
     @classmethod
-    def create_csrf_token(cls, sess_id: str) -> str:
+    async def create_csrf_token(cls, sess_id: str) -> str:
         nonce = cls._b64url(token_bytes(32))
-        return cls._sign_csrf(sess_id, nonce)
+        return await cls._sign_csrf(sess_id, nonce)
 
     @classmethod
-    def verify_csrf_token(cls, sess_id: str, token: str) -> bool:
+    async def verify_csrf_token(cls, sess_id: str, token: str) -> bool:
         try:
             nonce, _sig = token.split(".", 1)
         except ValueError as e:
             StructuredLogger.exception("auth.verify_csrf_token.error", error=str(e))
             return False
 
-        expected = cls._sign_csrf(sess_id, nonce)
+        expected = await cls._sign_csrf(sess_id, nonce)
         is_valid = compare_digest(expected, token)
 
         StructuredLogger.debug(

@@ -1,6 +1,6 @@
 from fastapi import Response
 
-from src.backend.app.config import get_config
+from ....config import get_config
 
 config = get_config()
 
