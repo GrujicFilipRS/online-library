@@ -8,12 +8,12 @@ from bcrypt import checkpw, gensalt, hashpw
 from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
 
-from ...config import get_config
-from ...core.domain.exceptions import (
+from ....config import get_config
+from ....core.domain.exceptions import (
     AuthError,
     InvalidCredentialsError,
 )
-from .logging import StructuredLogger
+from .. import StructuredLogger
 
 config = get_config()
 

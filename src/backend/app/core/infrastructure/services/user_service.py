@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ....shared.utils import AuthUtils
+from ....shared.utils.auth import AuthUtils
 from ...domain.exceptions import UserAlreadyExistsError, UserNotFoundError
 from ...domain.models import User
 from ...domain.ports.repositories import BaseUserRepository

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from json import dumps, loads
 from uuid import UUID
 
-from .redis_client import RedisClient
+from .. import RedisClient
 
 
 @dataclass(slots=True)
