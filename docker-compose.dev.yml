@@ -32,6 +32,9 @@ services:
         uv run alembic upgrade head &&
         uv run fastapi dev src/backend/main.py --host 0.0.0.0 --port 8000
       "
+    depends_on:
+      redis:
+        condition: service_healthy
 
   redis:
     image: redis:latest

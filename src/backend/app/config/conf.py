@@ -11,6 +11,7 @@ load_dotenv()
 REQUIRED_ENV_VARS = (
     "DATABASE_URL_DEV",
     "DATABASE_URL_PROD",
+    "REDIS_URL",
     "APP_NAME",
     "APP_DESCRIPTION",
     "APP_VERSION",
@@ -48,6 +49,8 @@ class Config:
     DATABASE_URL_DEV: str = require_env("DATABASE_URL_DEV")
     DATABASE_URL_PROD: str = require_env("DATABASE_URL_PROD")
     PRJ_DEV_MODE: bool = getenv("PRJ_DEV_MODE", "true").lower() == "true"
+
+    REDIS_URL: str = require_env("REDIS_URL")
 
     APP_NAME: str = require_env("APP_NAME")
     APP_DESCRIPTION: str = require_env("APP_DESCRIPTION")
