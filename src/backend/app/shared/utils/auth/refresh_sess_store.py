@@ -7,8 +7,8 @@ from .. import RedisClient
 
 @dataclass(slots=True)
 class RefreshSession:
-    sub: str
-    sid: str
+    sub: UUID
+    sid: UUID
 
 
 class RefreshSessionStorage:
@@ -24,7 +24,7 @@ class RefreshSessionStorage:
         sess_id: UUID,
         ttl_seconds: int,
     ) -> None:
-        payload = dumps({"sub": user_id, "sid": sess_id})
+        payload = dumps({"sub": str(user_id), "sid": str(sess_id)})
         await RedisClient.set(cls._key(jwt_id), payload, ex=ttl_seconds)
 
     @classmethod
@@ -33,7 +33,10 @@ class RefreshSessionStorage:
         if raw is None:
             return None
         data = loads(raw)
-        return RefreshSession(sub=data["sub"], sid=data["sid"])
+        return RefreshSession(
+            sub=UUID(data["sub"]),
+            sid=UUID(data["sid"]),
+        )
 
     @classmethod
     async def delete(cls, jwt_id: UUID) -> None:

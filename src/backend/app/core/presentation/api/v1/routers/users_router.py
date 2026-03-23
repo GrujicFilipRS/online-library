@@ -34,6 +34,7 @@ async def register_via_password(
     return {
         "success": True,
         "message": "successfully registered new user",
+        "code": "Success",
         "user": user_dto,
     }
 
@@ -53,4 +54,5 @@ async def login_via_password(
     return {
         "success": True,
         "message": "successfully logged in",
+        "code": "Success",
     }

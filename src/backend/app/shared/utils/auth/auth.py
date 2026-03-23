@@ -4,7 +4,7 @@ from hmac import new
 from secrets import compare_digest, token_bytes
 from uuid import UUID
 
-from bcrypt import checkpw, gensalt, hashpw
+import argon2
 from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
 
@@ -29,18 +29,28 @@ class AuthUtils:
 
     @classmethod
     async def hash_password(cls, password: str) -> str:
-        """Password hashing"""
-        return hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
+        """Hashes password"""
+
+        hasher = argon2.PasswordHasher()
+        return hasher.hash(password)
 
     @classmethod
     async def verify_password(cls, password: str, hashed_password: str) -> bool:
         """Verifies users password"""
-        is_valid = checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
-        StructuredLogger.debug(
-            "auth.password_verification.result",
-            result="success" if is_valid else "failure",
-        )
-        return is_valid
+        try:
+            hasher = argon2.PasswordHasher()
+            hasher.verify(hashed_password, password)
+
+        except argon2.exceptions.VerifyMismatchError:
+            return False
+
+        except Exception as e:
+            StructuredLogger.exception(
+                "auth.password_verification.unexpected_error", error=e
+            )
+            return False
+
+        return True
 
     @classmethod
     async def create_access_token(cls, user_id: UUID, sess_id: UUID) -> str:
