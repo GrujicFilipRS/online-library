@@ -19,7 +19,7 @@ from src.backend.app.shared.utils import Base
 
 @pytest.fixture
 async def test_engine() -> AsyncGenerator[AsyncEngine, Any]:
-    """Создает асинхронный движок базы данных для тестов."""
+    """Creates asynchronous database engine for tests"""
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
         future=True,
@@ -34,7 +34,7 @@ async def test_engine() -> AsyncGenerator[AsyncEngine, Any]:
 
 @pytest.fixture
 async def db_sess(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, Any]:
-    """Создает новую сессию и откатывает все изменения после теста."""
+    """Creates new database session and reverts all changes after testing"""
     async with test_engine.connect() as conn:
         transaction = await conn.begin()
 
