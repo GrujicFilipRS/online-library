@@ -14,7 +14,7 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
+      backend: ${{ steps.changes.outputs.backend }}
     steps:
       - uses: actions/checkout@v6.0.2
       - uses: dorny/paths-filter@v4
