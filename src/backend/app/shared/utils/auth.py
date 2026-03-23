@@ -6,7 +6,7 @@ from joserfc.errors import BadSignatureError, DecodeError, ExpiredTokenError
 from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
 
-from ...config import Config
+from ...config import get_config
 from ...core.domain.exceptions import (
     BadTokenSignatureError,
     DomainError,
@@ -17,19 +17,21 @@ from ...core.domain.exceptions import (
 )
 from .logging import StructuredLogger
 
+config = get_config()
+
 
 class AuthUtils:
     """Class for working with the authentication of users"""
 
-    key = OctKey.import_key(Config.APP_SECRET_KEY)
+    key = OctKey.import_key(config.APP_SECRET_KEY.get_secret_value())
 
     @staticmethod
     async def create_token(user_id: UUID) -> str:
         """Returns the token for the user"""
         now = datetime.now(UTC)
-        exp = (now + timedelta(minutes=Config.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()
+        exp = (now + timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()
         iat = (now - timedelta(minutes=1)).timestamp()
-        claims = {"sub": str(user_id), "exp": exp, "iss": Config.APP_NAME, "iat": iat}
+        claims = {"sub": str(user_id), "exp": exp, "iss": config.APP_NAME, "iat": iat}
 
         # key must be atleast 32 bytes long
         token = encode({"alg": "HS256"}, claims, AuthUtils.key)  # type: ignore
@@ -59,10 +61,10 @@ class AuthUtils:
             )
             claims_requests.validate(decoded_token.claims)
 
-            if decoded_token.claims.get("iss") != Config.APP_NAME:
+            if decoded_token.claims.get("iss") != config.APP_NAME:
                 StructuredLogger.error(
                     "auth.decode_token.invalid_iss",
-                    expected_iss=Config.APP_NAME,
+                    expected_iss=config.APP_NAME,
                     received_iss=decoded_token.claims.get("iss"),
                 )
                 raise InvalidISSError("invalid token iss")

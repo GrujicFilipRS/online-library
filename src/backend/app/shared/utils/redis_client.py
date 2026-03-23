@@ -5,8 +5,10 @@ from typing import Any
 from redis.asyncio import Redis, lock
 from redis.asyncio.connection import ConnectionPool
 
-from ...config import Config
+from ...config import get_config
 from .logging import StructuredLogger
+
+config = get_config()
 
 
 class RedisClient:
@@ -26,7 +28,7 @@ class RedisClient:
             return
 
         cls._pool = ConnectionPool.from_url(
-            Config.REDIS_URL,
+            config.REDIS_URL,
             max_connections=20,
             socket_timeout=5,
             socket_connect_timeout=5,

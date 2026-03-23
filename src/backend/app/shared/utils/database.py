@@ -10,8 +10,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from ...config import Config
+from ...config import get_config
 from .logging import StructuredLogger
+
+config = get_config()
 
 
 class Database:
@@ -30,7 +32,7 @@ class Database:
         """
         if cls._engine is None:
             cls._engine = create_async_engine(
-                Config.DATABASE_URL,
+                config.DATABASE_URL,
                 echo=False,
                 future=True,
                 pool_size=20,  # minimal amount of connections in the pool

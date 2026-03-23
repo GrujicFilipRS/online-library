@@ -24,8 +24,9 @@ from src.backend.app.core.infrastructure.db_models import *
 from src.backend.app.shared.utils import Base
 target_metadata = Base.metadata
 
-from src.backend.app.config import Config
-config.set_main_option("sqlalchemy.url", Config.DATABASE_URL)
+from src.backend.app.config import get_config
+app_config = get_config()
+config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
