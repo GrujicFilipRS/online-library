@@ -84,4 +84,3 @@ class AuthProviderNotLinkedError(DomainError):
 @dataclass
 class AuthProviderUnlinkNotSafeError(DomainError):
     message = "AuthProviderUnlinkNotSafeError"
-
