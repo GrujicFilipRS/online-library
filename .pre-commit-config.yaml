@@ -58,6 +58,7 @@ repos:
         entry: npm run --prefix ./src/frontend lint --
         language: system
         pass_filenames: false
+        files: ^src/frontend/.*
 
   - repo: local
     hooks:
@@ -66,3 +67,4 @@ repos:
         entry: npm run --prefix ./src/frontend format --
         language: system
         pass_filenames: false
+        files: ^src/frontend/.*
