@@ -33,4 +33,5 @@ jobs:
       - uses: astral-sh/setup-uv@v7.3.0
       - run: uv python install
       - run: uv sync
+      - run: cp .env.example .env
       - run: uv run pytest
