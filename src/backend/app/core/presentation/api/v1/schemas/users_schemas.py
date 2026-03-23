@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from ......shared.infra.dto import BaseResponseDTO
 from .....infrastructure.dto.users_dto import UserDTO
 
 
@@ -8,7 +9,10 @@ class RegisterViaPasswordRequestSchema(BaseModel):
     password: str
 
 
-class RegisterViaPasswordResponseSchema(BaseModel):
-    success: bool
-    message: str
+class RegisterViaPasswordResponseSchema(BaseResponseDTO):
     user: UserDTO
+
+
+class LoginViaPasswordRequestSchema(BaseModel):
+    username: str
+    password: str
