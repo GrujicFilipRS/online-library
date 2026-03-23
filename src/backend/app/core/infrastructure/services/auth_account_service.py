@@ -8,13 +8,18 @@ from ...domain.exceptions import (
 )
 from ...domain.models import AuthAccount
 from ...domain.ports.repositories import BaseAuthAccountRepository
-from ...domain.ports.services import BaseAuthAccountService
+from ...domain.ports.services import BaseAuthAccountService, BaseUserService
 from ...domain.value_objects import AuthProvider, AuthProviderUserId
 
 
 class AuthAccountService(BaseAuthAccountService):
-    def __init__(self, auth_account_repository: BaseAuthAccountRepository):
+    def __init__(
+        self,
+        auth_account_repository: BaseAuthAccountRepository,
+        user_service: BaseUserService,
+    ):
         self.auth_account_repository = auth_account_repository
+        self.user_service = user_service
 
     async def link_auth_provider_to_user(
         self,
@@ -106,9 +111,10 @@ class AuthAccountService(BaseAuthAccountService):
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         has_target = any(acc.auth_provider == auth_provider for acc in auth_accounts)
 
+        if await self.user_service.has_password_set(user_id):
+            return True
+
         if len(auth_accounts) > 1 and has_target:
             return True
 
         return False
-
-    # TODO: add a check for the user having a password as a way to authenticate

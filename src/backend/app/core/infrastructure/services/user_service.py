@@ -31,3 +31,11 @@ class UserService(BaseUserService):
         if user is None:
             raise UserNotFoundError("user with given username not found")
         return user
+
+    async def has_password_set(self, user_id: UUID) -> bool:
+        user = await self.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError("user with given id not found")
+        if not user.hashed_password:
+            return False
+        return True
