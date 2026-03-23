@@ -22,6 +22,7 @@ services:
       dockerfile: ./src/backend/Dockerfile.dev
     volumes:
       - ./src/backend:/app/src/backend
+      - ./.sqlite_data:/app/.sqlite_data
       - uv-venv:/app/.venv
     ports:
       - "8000:8000"

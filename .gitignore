@@ -24,3 +24,4 @@ htmlcov
 node_modules
 clear_cache.py
 *.db
+.sqlite_data
