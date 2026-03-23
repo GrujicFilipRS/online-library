@@ -12,9 +12,6 @@ class BaseUserService(ABC):
     async def create_user(self, username: str, password: str) -> User: ...
 
     @abstractmethod
-    async def login_user(self, username: str, password: str) -> User: ...
-
-    @abstractmethod
     async def get_user_by_id(self, user_id: UUID) -> User: ...
 
     @abstractmethod

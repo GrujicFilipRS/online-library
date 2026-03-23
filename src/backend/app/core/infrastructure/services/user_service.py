@@ -2,7 +2,6 @@ from uuid import UUID
 
 from ....shared.utils.auth import AuthUtils
 from ...domain.exceptions import (
-    InvalidCredentialsError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
@@ -22,12 +21,6 @@ class UserService(BaseUserService):
         hashed_password = await AuthUtils.hash_password(password)
         user = User.create(username, hashed_password)
         await self.user_repo.save(user)
-        return user
-
-    async def login_user(self, username: str, password: str) -> User:
-        user = await self.get_user_by_username(username)
-        if not await AuthUtils.verify_password(password, user.hashed_password):
-            raise InvalidCredentialsError("invalid credentials")
         return user
 
     async def get_user_by_id(self, user_id: UUID) -> User:

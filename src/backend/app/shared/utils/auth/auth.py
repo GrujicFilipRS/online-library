@@ -48,9 +48,9 @@ class AuthUtils:
         iat = cls._now_ts()
         exp = iat + int(config.ACCESS_TTL.total_seconds())
         claims = {
-            "sub": str(user_id),
+            "sub": user_id.hex,
             "type": "access",
-            "sid": str(sess_id),
+            "sid": sess_id.hex,
             "iss": config.APP_NAME,
             "iat": iat,
             "exp": exp,
@@ -75,10 +75,10 @@ class AuthUtils:
         iat = cls._now_ts()
         exp = iat + int(config.REFRESH_TTL.total_seconds())
         claims = {
-            "sub": str(user_id),
+            "sub": user_id.hex,
             "type": "refresh",
-            "sid": str(sess_id),
-            "jti": str(jwt_id),
+            "sid": sess_id.hex,
+            "jti": jwt_id.hex,
             "iss": config.APP_NAME,
             "iat": iat,
             "exp": exp,
@@ -160,19 +160,19 @@ class AuthUtils:
         return csrf
 
     @classmethod
-    async def create_csrf_token(cls, sess_id: str) -> str:
+    async def create_csrf_token(cls, sess_id: UUID) -> str:
         nonce = cls._b64url(token_bytes(32))
-        return await cls._sign_csrf(sess_id, nonce)
+        return await cls._sign_csrf(sess_id.hex, nonce)
 
     @classmethod
-    async def verify_csrf_token(cls, sess_id: str, token: str) -> bool:
+    async def verify_csrf_token(cls, sess_id: UUID, token: str) -> bool:
         try:
             nonce, _sig = token.split(".", 1)
         except ValueError as e:
             StructuredLogger.exception("auth.verify_csrf_token.error", error=str(e))
             return False
 
-        expected = await cls._sign_csrf(sess_id, nonce)
+        expected = await cls._sign_csrf(sess_id.hex, nonce)
         is_valid = compare_digest(expected, token)
 
         StructuredLogger.debug(
