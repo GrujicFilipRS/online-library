@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
-import bcrypt
+import argon2
 from joserfc.errors import BadSignatureError, DecodeError, ExpiredTokenError
 from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
@@ -110,13 +110,11 @@ class AuthUtils:
         """Verifies users password"""
 
         try:
-            is_valid = bcrypt.checkpw(
-                password.encode("utf-8"), hashed_password.encode("utf-8")
-            )
-            StructuredLogger.debug(
-                "auth.password_verification.result",
-                result="success" if is_valid else "failure",
-            )
+            hasher = argon2.PasswordHasher()
+            hasher.verify(hashed_password, password)
+
+        except argon2.exceptions.VerifyMismatchError as err:
+            raise InvalidCredentialsError("invalid credentials") from err
 
         except Exception as e:
             StructuredLogger.exception(
@@ -126,5 +124,7 @@ class AuthUtils:
 
     @staticmethod
     async def hash_password(password: str) -> str:
-        """Password hashing"""
-        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        """Hashes password"""
+
+        hasher = argon2.PasswordHasher()
+        return hasher.hash(password)
