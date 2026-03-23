@@ -18,6 +18,8 @@ REQUIRED_ENV_VARS = (
     "APP_SECRET_KEY",
 )
 
+TEST_MODE: bool = getenv("TEST_MODE", "false").lower() == "true"
+
 
 def require_env(name: str) -> str:
     value = getenv(name)
@@ -33,7 +35,8 @@ for var in REQUIRED_ENV_VARS:
     try:
         require_env(var)
     except RuntimeError:
-        raise_exc = True
+        if TEST_MODE is None:
+            raise_exc = True
         missing_vars.append(var)
 
 if raise_exc:

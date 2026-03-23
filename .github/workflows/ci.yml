@@ -9,7 +9,23 @@ on:
       - "**"
 
 jobs:
-  test:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: dorny/paths-filter@v4
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'src/backend/**'
+
+  backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.0.2
@@ -18,11 +34,4 @@ jobs:
       - run: uv sync
       - run: uv run pytest
         env:
-          DATABASE_URL_DEV: "sqlite+aiosqlite:///./.db"
-          DATABASE_URL_PROD: "postgresql+asyncpg://admin:admin@127.0.0.1:5432/app"
-          PRJ_DEV_MODE: "true"
-          REDIS_URL: "redis://redis:6379/0"
-          APP_NAME: "online_library"
-          APP_DESCRIPTION: "with <3 by palacinke i kafa"
-          APP_VERSION: "0.1.0"
-          APP_SECRET_KEY: "ril73-is-a-very-secret-key-that-is-at-least-32-bytes-long"
+          TEST_MODE: "true"
