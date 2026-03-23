@@ -11,7 +11,9 @@ from src.backend.app.core.infrastructure.units_of_work.sqlal import (
 
 @pytest.fixture
 async def user_uow_factory(db_sess):
-    return lambda: SqlAlchemyUserUnitOfWork(db_sess)
+    sqlal_user_uow = SqlAlchemyUserUnitOfWork(db_sess)
+    sqlal_user_uow._logging_enabled = False
+    return lambda: sqlal_user_uow
 
 
 @pytest.fixture
