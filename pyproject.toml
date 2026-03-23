@@ -25,7 +25,6 @@ dev = [
     "ruff>=0.15.2",
 ]
 prod = [
-    "asyncpg>=0.31.0",
     "gunicorn>=25.1.0",
 ]
 
