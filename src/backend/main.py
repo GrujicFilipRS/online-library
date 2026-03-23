@@ -3,7 +3,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from .app.config import Config
+from .app.config import get_config
 from .app.core.infrastructure.di.providers import (
     DBSessionProvider,
     RepositoryProvider,
@@ -13,14 +13,16 @@ from .app.core.infrastructure.di.providers import (
 from .app.core.presentation.api.v1 import api_v1_router
 from .app.shared.utils import lifespan, setup_error_handling
 
+config = get_config()
+
 app = FastAPI(
     lifespan=lifespan,
-    title=Config.APP_NAME,
-    description=Config.APP_DESCRIPTION,
-    version=Config.APP_VERSION,
-    docs_url="/docs" if Config.ENABLE_API_DOCS else None,
-    redoc_url="/redoc" if Config.ENABLE_API_DOCS else None,
-    openapi_url="/openapi.json" if Config.ENABLE_API_DOCS else None,
+    title=config.APP_NAME,
+    description=config.APP_DESCRIPTION,
+    version=config.APP_VERSION,
+    docs_url="/docs" if config.ENABLE_API_DOCS else None,
+    redoc_url="/redoc" if config.ENABLE_API_DOCS else None,
+    openapi_url="/openapi.json" if config.ENABLE_API_DOCS else None,
 )
 
 app.add_middleware(

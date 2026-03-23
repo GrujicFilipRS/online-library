@@ -2,66 +2,41 @@
 # It checks if the required environment variables are loaded,
 # as well as init a class that's used to store environment variables
 
-from os import getenv
+from functools import lru_cache
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-REQUIRED_ENV_VARS = (
-    "DATABASE_URL_DEV",
-    "DATABASE_URL_PROD",
-    "REDIS_URL",
-    "APP_NAME",
-    "APP_DESCRIPTION",
-    "APP_VERSION",
-    "APP_SECRET_KEY",
-)
-
-TEST_MODE: bool = getenv("TEST_MODE", "false").lower() == "true"
+from pydantic import Field, SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def require_env(name: str) -> str:
-    value = getenv(name)
-    if value is None:
-        raise RuntimeError(f"Missing required env var: {name}")
-    return value
+class Config(BaseSettings):
+    # required
+    APP_NAME: str = Field(min_length=1)
+    APP_DESCRIPTION: str = Field(min_length=1)
+    APP_VERSION: str = Field(min_length=1)
+    APP_SECRET_KEY: SecretStr
 
+    DATABASE_URL_DEV: str = Field(min_length=1)
+    DATABASE_URL_PROD: str = Field(min_length=1)
+    REDIS_URL: str = Field(min_length=1)
 
-raise_exc: bool = False
-missing_vars: list[str] = []
+    # optional
+    PRJ_DEV_MODE: bool = True
+    ENABLE_API_DOCS: bool = True
+    FRONTEND_URL: str = "http://localhost:5173"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 24
 
-for var in REQUIRED_ENV_VARS:
-    try:
-        require_env(var)
-    except RuntimeError:
-        if TEST_MODE is not True:
-            raise_exc = True
-        missing_vars.append(var)
+    @property
+    def DATABASE_URL(self) -> str:  # noqa: N802
+        return self.DATABASE_URL_DEV if self.PRJ_DEV_MODE else self.DATABASE_URL_PROD
 
-if raise_exc:
-    raise Exception(
-        f"Missing required environment variables: {', '.join(missing_vars)}"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
     )
 
 
-class Config:
-    def __new__(cls):
-        raise TypeError("Config is a static configuration class")
-
-    DATABASE_URL_DEV: str = require_env("DATABASE_URL_DEV")
-    DATABASE_URL_PROD: str = require_env("DATABASE_URL_PROD")
-    PRJ_DEV_MODE: bool = getenv("PRJ_DEV_MODE", "true").lower() == "true"
-
-    REDIS_URL: str = require_env("REDIS_URL")
-
-    APP_NAME: str = require_env("APP_NAME")
-    APP_DESCRIPTION: str = require_env("APP_DESCRIPTION")
-    APP_VERSION: str = require_env("APP_VERSION")
-    ENABLE_API_DOCS: bool = getenv("ENABLE_API_DOCS", "true").lower() == "true"
-
-    DATABASE_URL: str = DATABASE_URL_DEV if PRJ_DEV_MODE else DATABASE_URL_PROD
-    FRONTEND_URL: str = getenv("FRONTEND_URL", "http://localhost:5173")
-
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 24))
-    APP_SECRET_KEY: str = require_env("APP_SECRET_KEY")
+@lru_cache
+def get_config() -> Config:
+    return Config()  # type: ignore
