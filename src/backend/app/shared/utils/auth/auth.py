@@ -9,10 +9,6 @@ from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
 
 from ....config import get_config
-from ....core.domain.exceptions import (
-    AuthError,
-    InvalidCredentialsError,
-)
 from .. import StructuredLogger
 
 config = get_config()
@@ -39,21 +35,12 @@ class AuthUtils:
     @classmethod
     async def verify_password(cls, password: str, hashed_password: str) -> bool:
         """Verifies users password"""
-        try:
-            is_valid = checkpw(
-                password.encode("utf-8"), hashed_password.encode("utf-8")
-            )
-            StructuredLogger.debug(
-                "auth.password_verification.result",
-                result="success" if is_valid else "failure",
-            )
-            return is_valid
-
-        except Exception as e:
-            StructuredLogger.exception(
-                "auth.password_verification.unexpected_error", error=e
-            )
-            raise InvalidCredentialsError("invalid credentials") from e
+        is_valid = checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+        StructuredLogger.debug(
+            "auth.password_verification.result",
+            result="success" if is_valid else "failure",
+        )
+        return is_valid
 
     @classmethod
     async def create_access_token(cls, user_id: UUID, sess_id: UUID) -> str:
@@ -109,55 +96,53 @@ class AuthUtils:
         return token
 
     @classmethod
-    async def decode_token(cls, token: str) -> Token:
+    async def decode_token(cls, token: str) -> Token | None:
         """Decodes and returns the Token"""
-        try:
-            decoded_token = decode(
-                token,
-                cls._key,
-                algorithms=[config.ALGORITHM],
+        decoded_token = decode(
+            token,
+            cls._key,
+            algorithms=[config.ALGORITHM],
+        )
+        claims_requests = JWTClaimsRegistry(
+            sub={"essential": True, "allow_blank": False},
+            type={
+                "essential": True,
+                "allow_blank": False,
+                "values": ["access", "refresh"],
+            },
+            sid={"essential": True, "allow_blank": False},
+            iss={"essential": True, "allow_blank": False},
+            iat={"essential": True, "allow_blank": False},
+            exp={"essential": True, "allow_blank": False},
+        )
+        claims_requests.validate(decoded_token.claims)
+
+        if decoded_token.claims.get("iss") != config.APP_NAME:
+            StructuredLogger.error(
+                "auth.decode_token.invalid_iss",
+                expected_iss=config.APP_NAME,
+                received_iss=decoded_token.claims.get("iss"),
             )
-            claims_requests = JWTClaimsRegistry(
-                sub={"essential": True, "allow_blank": False},
-                type={
-                    "essential": True,
-                    "allow_blank": False,
-                    "values": ["access", "refresh"],
-                },
-                sid={"essential": True, "allow_blank": False},
-                iss={"essential": True, "allow_blank": False},
-                iat={"essential": True, "allow_blank": False},
-                exp={"essential": True, "allow_blank": False},
-            )
-            claims_requests.validate(decoded_token.claims)
+            return None
 
-            if decoded_token.claims.get("iss") != config.APP_NAME:
-                StructuredLogger.error(
-                    "auth.decode_token.invalid_iss",
-                    expected_iss=config.APP_NAME,
-                    received_iss=decoded_token.claims.get("iss"),
-                )
-                raise AuthError("invalid token iss")
+        user_id = UUID(decoded_token.claims["sub"])
 
-            user_id = UUID(decoded_token.claims["sub"])
+        StructuredLogger.debug("auth.decode_token.success", user_id=user_id)
 
-            StructuredLogger.debug("auth.decode_token.success", user_id=user_id)
-
-            return decoded_token
-
-        except Exception as e:
-            StructuredLogger.exception("auth.decode_token.error", error=str(e))
-            raise AuthError("invalid or expired token") from e
+        return decoded_token
 
     @staticmethod
-    async def get_user_id_from_token(token: str) -> UUID:
+    async def get_user_id_from_token(token: str) -> UUID | None:
         """Gets user id from token"""
         payload = await AuthUtils.decode_token(token)
+        if payload is None:
+            StructuredLogger.warning("auth.get_user_from_token.no_payload")
+            return None
 
         user_id = payload.claims.get("sub")
         if user_id is None:
             StructuredLogger.warning("auth.get_user_from_token.no_user_id")
-            raise AuthError("failed to get user id")
+            return None
 
         return UUID(user_id)
 

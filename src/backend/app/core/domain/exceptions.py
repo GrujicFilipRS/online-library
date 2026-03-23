@@ -37,16 +37,6 @@ class InvalidRoleError(DomainError):
 
 
 @dataclass
-class AuthError(DomainError):
-    message = "AuthError"
-
-
-@dataclass
-class InvalidCredentialsError(DomainError):
-    message = "InvalidCredentialsError"
-
-
-@dataclass
 class InvalidAuthProviderError(DomainError):
     message = "InvalidAuthProviderError"
 
