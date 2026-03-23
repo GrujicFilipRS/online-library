@@ -9,6 +9,7 @@ from .app.core.infrastructure.di.providers import (
     RepositoryProvider,
     ServiceProvider,
     UnitOfWorkFactoryProvider,
+    UseCaseProvider,
 )
 from .app.core.presentation.api.v1 import api_v1_router
 from .app.shared.utils import lifespan, setup_error_handling
@@ -38,6 +39,7 @@ container = make_async_container(
     RepositoryProvider(),
     ServiceProvider(),
     UnitOfWorkFactoryProvider(),
+    UseCaseProvider(),
 )
 
 setup_dishka(container=container, app=app)

@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from uuid import UUID
 
-from ...domain.ports.units_of_work import BaseAuthAccountUnitOfWork
-from ...domain.value_objects import AuthProvider
+from ....domain.ports.units_of_work import BaseAuthAccountUnitOfWork
+from ....domain.value_objects import AuthProvider
 
 
 class UnlinkProviderUseCase:
@@ -13,4 +13,6 @@ class UnlinkProviderUseCase:
 
     async def execute(self, user_id: UUID, provider: AuthProvider) -> None:
         async with self.auth_account_uow_factory() as uow:
-            await uow.auth_account_service.unlink_provider_from_user(user_id, provider)
+            await uow.auth_account_service.unlink_auth_provider_from_user(
+                user_id, provider
+            )
