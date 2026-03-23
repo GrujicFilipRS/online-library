@@ -11,6 +11,5 @@ class RegisterViaPasswordUseCase:
 
     async def execute(self, username: str, password: str) -> User:
         async with self.user_uow_factory() as uow:
-            hashed_password = await AuthUtils.hash_password(password)
-            user = await uow.user_service.create_user(username, hashed_password)
+            user = await uow.user_service.create_user(username, password)
             return user
