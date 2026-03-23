@@ -9,8 +9,7 @@ from .....application.use_cases.user import (
     RegisterViaPasswordUseCase,
 )
 from .....infrastructure.mappers import UserMapper
-from ..schemas import (
-    LoginViaPasswordRequestSchema,
+from ..schemas.users_schemas import (
     RegisterViaPasswordRequestSchema,
     RegisterViaPasswordResponseSchema,
 )

@@ -9,10 +9,13 @@ class RegisterViaPasswordRequestSchema(BaseModel):
     password: str
 
 
-class RegisterViaPasswordResponseSchema(BaseResponseDTO):
-    user: UserDTO
-
 
 class LoginViaPasswordRequestSchema(BaseModel):
     username: str
     password: str
+
+
+class RegisterViaPasswordResponseSchema(BaseModel):
+    success: bool
+    message: str
+    user: UserDTO
