@@ -37,23 +37,8 @@ class InvalidRoleError(DomainError):
 
 
 @dataclass
-class InvalidISSError(DomainError):
-    message = "InvalidISSError"
-
-
-@dataclass
-class TokenExpiredError(DomainError):
-    message = "TokenExpiredError"
-
-
-@dataclass
-class TokenDecodeError(DomainError):
-    message = "TokenDecodeError"
-
-
-@dataclass
-class BadTokenSignatureError(DomainError):
-    message = "BadTokenSignatureError"
+class AuthError(DomainError):
+    message = "AuthError"
 
 
 @dataclass

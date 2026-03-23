@@ -1,19 +1,17 @@
-from datetime import UTC, datetime, timedelta
+from base64 import urlsafe_b64encode
+from datetime import UTC, datetime
+from hmac import new
+from secrets import compare_digest, token_bytes
 from uuid import UUID
 
-import bcrypt
-from joserfc.errors import BadSignatureError, DecodeError, ExpiredTokenError
+from bcrypt import checkpw, gensalt, hashpw
 from joserfc.jwk import OctKey
 from joserfc.jwt import JWTClaimsRegistry, Token, decode, encode
 
 from ...config import get_config
 from ...core.domain.exceptions import (
-    BadTokenSignatureError,
-    DomainError,
+    AuthError,
     InvalidCredentialsError,
-    InvalidISSError,
-    TokenDecodeError,
-    TokenExpiredError,
 )
 from .logging import StructuredLogger
 
@@ -23,41 +21,113 @@ config = get_config()
 class AuthUtils:
     """Class for working with the authentication of users"""
 
-    key = OctKey.import_key(config.APP_SECRET_KEY.get_secret_value())
+    _key = OctKey.import_key(config.APP_SECRET_KEY.get_secret_value())
 
     @staticmethod
-    async def create_token(user_id: UUID) -> str:
-        """Returns the token for the user"""
-        now = datetime.now(UTC)
-        exp = (now + timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()
-        iat = (now - timedelta(minutes=1)).timestamp()
-        claims = {"sub": str(user_id), "exp": exp, "iss": config.APP_NAME, "iat": iat}
+    def _now_ts() -> int:
+        return int(datetime.now(UTC).timestamp())
+
+    @staticmethod
+    def _b64url(data: bytes) -> str:
+        return urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
+    @classmethod
+    async def hash_password(cls, password: str) -> str:
+        """Password hashing"""
+        return hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
+
+    @classmethod
+    async def verify_password(cls, password: str, hashed_password: str) -> bool:
+        """Verifies users password"""
+        try:
+            is_valid = checkpw(
+                password.encode("utf-8"), hashed_password.encode("utf-8")
+            )
+            StructuredLogger.debug(
+                "auth.password_verification.result",
+                result="success" if is_valid else "failure",
+            )
+            return is_valid
+
+        except Exception as e:
+            StructuredLogger.exception(
+                "auth.password_verification.unexpected_error", error=e
+            )
+            raise InvalidCredentialsError("invalid credentials") from e
+
+    @classmethod
+    async def create_access_token(cls, user_id: UUID, sess_id: UUID) -> str:
+        """Returns the access token for the user"""
+        iat = cls._now_ts()
+        exp = iat + int(config.ACCESS_TTL.total_seconds())
+        claims = {
+            "sub": str(user_id),
+            "type": "access",
+            "sid": str(sess_id),
+            "iss": config.APP_NAME,
+            "iat": iat,
+            "exp": exp,
+        }
 
         # key must be atleast 32 bytes long
-        token = encode({"alg": "HS256"}, claims, AuthUtils.key)  # type: ignore
+        token = encode({"alg": config.ALGORITHM}, claims, cls._key)
 
         StructuredLogger.debug(
             "auth.create_token.success",
             user_id=user_id,
-            expires_at=datetime.fromtimestamp(claims["exp"]).isoformat(),  # type: ignore
+            expires_at=datetime.fromtimestamp(exp).isoformat(),
         )
 
         return token
 
-    @staticmethod
-    async def decode_token(token: str) -> Token:
+    @classmethod
+    async def create_refresh_token(
+        cls, user_id: UUID, sess_id: UUID, jwt_id: UUID
+    ) -> str:
+        """Returns the refresh token for the user"""
+        iat = cls._now_ts()
+        exp = iat + int(config.REFRESH_TTL.total_seconds())
+        claims = {
+            "sub": str(user_id),
+            "type": "refresh",
+            "sid": str(sess_id),
+            "jti": str(jwt_id),
+            "iss": config.APP_NAME,
+            "iat": iat,
+            "exp": exp,
+        }
+
+        # key must be atleast 32 bytes long
+        token = encode({"alg": config.ALGORITHM}, claims, cls._key)
+
+        StructuredLogger.debug(
+            "auth.create_token.success",
+            user_id=user_id,
+            expires_at=datetime.fromtimestamp(exp).isoformat(),
+        )
+
+        return token
+
+    @classmethod
+    async def decode_token(cls, token: str) -> Token:
         """Decodes and returns the Token"""
         try:
             decoded_token = decode(
                 token,
-                AuthUtils.key,
-                ["HS256"],
+                cls._key,
+                algorithms=[config.ALGORITHM],
             )
             claims_requests = JWTClaimsRegistry(
-                exp={"essential": True, "allow_blank": False},
-                iss={"essential": True, "allow_blank": False},
                 sub={"essential": True, "allow_blank": False},
+                type={
+                    "essential": True,
+                    "allow_blank": False,
+                    "values": ["access", "refresh"],
+                },
+                sid={"essential": True, "allow_blank": False},
+                iss={"essential": True, "allow_blank": False},
                 iat={"essential": True, "allow_blank": False},
+                exp={"essential": True, "allow_blank": False},
             )
             claims_requests.validate(decoded_token.claims)
 
@@ -67,7 +137,7 @@ class AuthUtils:
                     expected_iss=config.APP_NAME,
                     received_iss=decoded_token.claims.get("iss"),
                 )
-                raise InvalidISSError("invalid token iss")
+                raise AuthError("invalid token iss")
 
             user_id = UUID(decoded_token.claims["sub"])
 
@@ -75,23 +145,9 @@ class AuthUtils:
 
             return decoded_token
 
-        except ExpiredTokenError as e:
-            StructuredLogger.warning("auth.decode_token.expired")
-            raise TokenExpiredError("token expired") from e
-
-        except DecodeError as e:
-            StructuredLogger.warning("auth.decode_token.decode_error", error=e)
-            raise TokenDecodeError("failed to decode token") from e
-
-        except BadSignatureError as e:
-            StructuredLogger.warning("auth.decode_token.bad_signature", error=str(e))
-            raise BadTokenSignatureError("bad token signature") from e
-
         except Exception as e:
-            StructuredLogger.exception(
-                "auth.decode_token.unexpected_error", error=str(e)
-            )
-            raise DomainError("unexpected error") from e
+            StructuredLogger.exception("auth.decode_token.error", error=str(e))
+            raise AuthError("invalid or expired token") from e
 
     @staticmethod
     async def get_user_id_from_token(token: str) -> UUID:
@@ -99,32 +155,31 @@ class AuthUtils:
         payload = await AuthUtils.decode_token(token)
 
         user_id = payload.claims.get("sub")
-        if not user_id:
+        if user_id is None:
             StructuredLogger.warning("auth.get_user_from_token.no_user_id")
-            raise TokenDecodeError("failed to get user id")
+            raise AuthError("failed to get user id")
 
         return UUID(user_id)
 
-    @staticmethod
-    async def verify_password(password: str, hashed_password: str) -> None:
-        """Verifies users password"""
+    @classmethod
+    def _sign_csrf(cls, sess_id: str, nonce: str) -> str:
+        msg = f"{sess_id}.{nonce}".encode()
+        sig = new(
+            config.APP_CSRF_SECRET.get_secret_value().encode("utf-8"), msg, "sha256"
+        ).digest()
+        return f"{nonce}.{cls._b64url(sig)}"
 
+    @classmethod
+    def create_csrf_token(cls, sess_id: str) -> str:
+        nonce = cls._b64url(token_bytes(32))
+        return cls._sign_csrf(sess_id, nonce)
+
+    @classmethod
+    def verify_csrf_token(cls, sess_id: str, token: str) -> bool:
         try:
-            is_valid = bcrypt.checkpw(
-                password.encode("utf-8"), hashed_password.encode("utf-8")
-            )
-            StructuredLogger.debug(
-                "auth.password_verification.result",
-                result="success" if is_valid else "failure",
-            )
+            nonce, _sig = token.split(".", 1)
+        except ValueError:
+            return False
 
-        except Exception as e:
-            StructuredLogger.exception(
-                "auth.password_verification.unexpected_error", error=e
-            )
-            raise InvalidCredentialsError("invalid credentials") from e
-
-    @staticmethod
-    async def hash_password(password: str) -> str:
-        """Password hashing"""
-        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        expected = cls._sign_csrf(sess_id, nonce)
+        return compare_digest(expected, token)
