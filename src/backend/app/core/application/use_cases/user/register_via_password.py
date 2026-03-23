@@ -1,6 +1,5 @@
 from collections.abc import Callable
 
-from .....shared.utils.auth import AuthUtils
 from ....domain.models.user import User
 from ....domain.ports.units_of_work import BaseUserUnitOfWork
 
