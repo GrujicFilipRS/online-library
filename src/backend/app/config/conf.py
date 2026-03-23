@@ -14,8 +14,8 @@ class Config(BaseSettings):
     APP_NAME: str = Field(min_length=1)
     APP_DESCRIPTION: str = Field(min_length=1)
     APP_VERSION: str = Field(min_length=1)
-    APP_SECRET_KEY: SecretStr
-    APP_CSRF_SECRET: SecretStr
+    APP_SECRET_KEY: SecretStr = Field(min_length=32)  # atleast 32 characters
+    APP_CSRF_SECRET: SecretStr = Field(min_length=32)  # atleast 32 characters
 
     DATABASE_URL_DEV: str = Field(min_length=1)
     DATABASE_URL_PROD: str = Field(min_length=1)
