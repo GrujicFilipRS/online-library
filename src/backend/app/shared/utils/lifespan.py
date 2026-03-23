@@ -6,8 +6,7 @@ from fastapi import FastAPI
 
 from .database import Database
 from .logging import StructuredLogger
-
-# from .redis import RedisService
+from .redis_client import RedisClient
 
 
 @asynccontextmanager
@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     try:
         await Database.init()
         await Database.test_connection()
-        # await RedisService.init()
+        await RedisClient.init()
         yield
     except Exception as e:
         StructuredLogger.exception("init.error", error=str(e))
@@ -28,4 +27,4 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     finally:
         await app.state.dishka_container.close()
         await Database.close()
-        # await RedisService.close()
+        await RedisClient.close()
