@@ -34,5 +34,3 @@ jobs:
       - run: uv python install
       - run: uv sync
       - run: uv run pytest
-        env:
-          TEST_MODE: "true"
