@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from ....config import get_config
-from ....shared.utils.auth import AuthUtils, RefreshSessionStorage
+from ....shared.domain.ports import BaseRefreshSessionStorage
+from ....shared.utils.auth import AuthUtils
 from ...domain.exceptions import InvalidCredentialsError
 from ...domain.models import User
 from ...domain.ports.repositories import BaseUserRepository
@@ -11,8 +12,13 @@ config = get_config()
 
 
 class AuthService(BaseAuthService):
-    def __init__(self, user_repo: BaseUserRepository):
+    def __init__(
+        self,
+        user_repo: BaseUserRepository,
+        refresh_sess_store: BaseRefreshSessionStorage,
+    ):
         self.user_repo = user_repo
+        self.refresh_sess_store = refresh_sess_store
 
     async def login_user(self, user: User, password: str) -> tuple[str, str, str]:
         if not await AuthUtils.verify_password(password, user.hashed_password):
@@ -28,6 +34,6 @@ class AuthService(BaseAuthService):
         )
         csrf_token = await AuthUtils.create_csrf_token(sess_id)
 
-        await RefreshSessionStorage.create(jwt_id, user.user_id, sess_id, ttl_seconds)
+        await self.refresh_sess_store.create(jwt_id, user.user_id, sess_id, ttl_seconds)
 
         return access_token, refresh_token, csrf_token
