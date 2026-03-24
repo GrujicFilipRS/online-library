@@ -17,8 +17,8 @@ from src.backend.app.core.domain.value_objects import (
 
 
 async def test_username_vo_length_ok():
-    UserName("ril737")  # minimum length is 6 chars
-    UserName("ril73" * 5)  # maximum length is 25 chars
+    assert UserName("ril737")  # minimum length is 6 chars
+    assert UserName("ril73" * 5)  # maximum length is 25 chars
 
 
 async def test_username_vo_invalid_length_raises():
@@ -29,8 +29,8 @@ async def test_username_vo_invalid_length_raises():
 
 
 async def test_user_role_vo_ok():
-    UserRole("User")
-    UserRole("Admin")
+    assert UserRole("User")
+    assert UserRole("Admin")
 
 
 async def test_user_role_vo_invalid_raises():
@@ -39,9 +39,9 @@ async def test_user_role_vo_invalid_raises():
 
 
 async def test_auth_provider_vo_ok():
-    AuthProvider("google")
-    AuthProvider("github")
-    AuthProvider("apple")
+    assert AuthProvider("google")
+    assert AuthProvider("github")
+    assert AuthProvider("apple")
 
 
 async def test_auth_provider_vo_invalid_raises():
@@ -50,7 +50,7 @@ async def test_auth_provider_vo_invalid_raises():
 
 
 async def test_auth_provider_user_id_ok():
-    AuthProviderUserId(uuid4().hex)  # not actual, example
+    assert AuthProviderUserId(uuid4().hex)  # not actual, example
 
 
 async def test_auth_provider_user_id_empty_raises():
