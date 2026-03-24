@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ....domain.models import AuthAccount
 from ....domain.ports.repositories import BaseAuthAccountRepository
-from ....domain.value_objects import AuthProvider, AuthProviderUserId
 from ...db_models import DBAuthAccount
 from ...mappers import AuthAccountMapper
 
@@ -38,13 +37,13 @@ class SqlAlchemyAuthAccountRepository(BaseAuthAccountRepository):
 
     async def get_by_auth_provider(
         self,
-        auth_provider: AuthProvider,
-        auth_provider_user_id: AuthProviderUserId,
+        auth_provider: str,
+        auth_provider_user_id: str,
     ) -> AuthAccount | None:
         query = await self.db_sess.execute(
             select(DBAuthAccount).where(
-                DBAuthAccount.auth_provider == auth_provider.value,
-                DBAuthAccount.auth_provider_user_id == auth_provider_user_id.value,
+                DBAuthAccount.auth_provider == auth_provider,
+                DBAuthAccount.auth_provider_user_id == auth_provider_user_id,
             )
         )
         db_auth_account = query.scalar_one_or_none()

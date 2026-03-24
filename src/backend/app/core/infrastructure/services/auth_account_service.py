@@ -9,7 +9,7 @@ from ...domain.exceptions import (
 from ...domain.models import AuthAccount
 from ...domain.ports.repositories import BaseAuthAccountRepository
 from ...domain.ports.services import BaseAuthAccountService
-from ...domain.value_objects import AuthProvider, AuthProviderUserId
+from ...domain.value_objects import AuthProviderUserId
 
 
 class AuthAccountService(BaseAuthAccountService):
@@ -19,8 +19,8 @@ class AuthAccountService(BaseAuthAccountService):
     async def link_auth_provider_to_user(
         self,
         user_id: UUID,
-        auth_provider: AuthProvider,
-        auth_provider_user_id: AuthProviderUserId,
+        auth_provider: str,
+        auth_provider_user_id: str,
     ) -> AuthAccount:
         existing_acc = await self.auth_account_repository.get_by_auth_provider(
             auth_provider, auth_provider_user_id
@@ -28,27 +28,28 @@ class AuthAccountService(BaseAuthAccountService):
         if existing_acc:
             raise AuthProviderAccountAlreadyInUseError()
 
-        auth_account = AuthAccount.create(
-            user_id, auth_provider.value, auth_provider_user_id.value
-        )
+        auth_account = AuthAccount.create(user_id, auth_provider, auth_provider_user_id)
         await self.auth_account_repository.save(auth_account)
         return auth_account
 
     async def authenticate_via_auth_provider(
         self,
-        auth_provider: AuthProvider,
-        auth_provider_user_id: AuthProviderUserId,
+        auth_provider: str,
+        auth_provider_user_id: str,
     ) -> AuthAccount:
         auth_account = await self.auth_account_repository.get_by_auth_provider(
             auth_provider, auth_provider_user_id
         )
         if not auth_account:
-            raise AuthProviderNotLinkedError(auth_provider.value)
+            raise AuthProviderNotLinkedError(auth_provider)
 
         return auth_account
 
     async def unlink_auth_provider_from_user(
-        self, user_id: UUID, auth_provider: AuthProvider, has_password_set: bool
+        self,
+        user_id: UUID,
+        auth_provider: str,
+        has_password_set: bool,
     ) -> None:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         if not auth_accounts:
@@ -76,8 +77,8 @@ class AuthAccountService(BaseAuthAccountService):
     async def change_auth_provider_identifier(
         self,
         user_id: UUID,
-        auth_provider: AuthProvider,
-        new_identifier: AuthProviderUserId,
+        auth_provider: str,
+        new_identifier: str,
     ) -> None:
         existing_acc = await self.auth_account_repository.get_by_auth_provider(
             auth_provider, new_identifier
@@ -96,13 +97,13 @@ class AuthAccountService(BaseAuthAccountService):
         if not auth_account:
             raise AuthProviderNotLinkedError
 
-        auth_account.auth_provider_user_id = new_identifier
+        auth_account.auth_provider_user_id = AuthProviderUserId(new_identifier)
         await self.auth_account_repository.save(auth_account)
 
     async def is_unlink_safe(
         self,
         user_id: UUID,
-        auth_provider: AuthProvider,
+        auth_provider: str,
     ) -> bool:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         has_target = any(acc.auth_provider == auth_provider for acc in auth_accounts)

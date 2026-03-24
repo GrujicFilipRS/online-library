@@ -106,11 +106,9 @@ async def test_get_auth_account_by_auth_provider(auth_account_repo, user_repo):
 
     await auth_account_repo.save(auth_account)
 
-    auth_provider_vo = AuthProvider(auth_provider)
-    auth_provider_user_id_vo = AuthProviderUserId(auth_provider_user_id)
     get_auth_account = await auth_account_repo.get_by_auth_provider(
-        auth_provider_vo,
-        auth_provider_user_id_vo,
+        auth_provider,
+        auth_provider_user_id,
     )
 
     assert isinstance(get_auth_account, AuthAccount)
@@ -119,12 +117,7 @@ async def test_get_auth_account_by_auth_provider(auth_account_repo, user_repo):
 async def test_get_nonexistent_auth_account_returns_none(auth_account_repo):
     assert await auth_account_repo.get_by_id(uuid4()) is None
     assert await auth_account_repo.get_by_user_id(uuid4()) == []
-    assert (
-        await auth_account_repo.get_by_auth_provider(
-            AuthProvider("google"), AuthProviderUserId(uuid4().hex)
-        )
-        is None
-    )
+    assert await auth_account_repo.get_by_auth_provider("google", uuid4().hex) is None
 
 
 async def test_delete_auth_account(auth_account_repo, user_repo):

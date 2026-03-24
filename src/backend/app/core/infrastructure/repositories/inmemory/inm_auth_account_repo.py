@@ -3,7 +3,6 @@ from uuid import UUID
 from .....shared.infra.inm_storage import InMemoryStorage
 from ....domain.models import AuthAccount
 from ....domain.ports.repositories import BaseAuthAccountRepository
-from ....domain.value_objects import AuthProvider, AuthProviderUserId
 
 
 class InMemoryAuthAccountRepository(BaseAuthAccountRepository):
@@ -25,15 +24,15 @@ class InMemoryAuthAccountRepository(BaseAuthAccountRepository):
 
     async def get_by_auth_provider(
         self,
-        auth_provider: AuthProvider,
-        auth_provider_user_id: AuthProviderUserId,
+        auth_provider: str,
+        auth_provider_user_id: str,
     ) -> AuthAccount | None:
         return next(
             (
                 acc
                 for acc in self.inm_storage.auth_accounts
-                if acc.auth_provider == auth_provider
-                and acc.auth_provider_user_id == auth_provider_user_id
+                if acc.auth_provider.value == auth_provider
+                and acc.auth_provider_user_id.value == auth_provider_user_id
             ),
             None,
         )
