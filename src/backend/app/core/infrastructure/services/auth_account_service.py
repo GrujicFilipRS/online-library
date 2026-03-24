@@ -53,10 +53,11 @@ class AuthAccountService(BaseAuthAccountService):
     ) -> None:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         if not auth_accounts:
-            raise UserNotFoundError
+            raise UserNotFoundError()
 
         auth_account = next(
-            (acc for acc in auth_accounts if acc.auth_provider == auth_provider), None
+            (acc for acc in auth_accounts if acc.auth_provider.value == auth_provider),
+            None,
         )
 
         if not auth_account:
@@ -84,18 +85,19 @@ class AuthAccountService(BaseAuthAccountService):
             auth_provider, new_identifier
         )
         if existing_acc and existing_acc.user_id != user_id:
-            raise AuthProviderAccountAlreadyInUseError
+            raise AuthProviderAccountAlreadyInUseError()
 
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         if not auth_accounts:
-            raise UserNotFoundError
+            raise UserNotFoundError()
 
         auth_account = next(
-            (acc for acc in auth_accounts if acc.auth_provider == auth_provider), None
+            (acc for acc in auth_accounts if acc.auth_provider.value == auth_provider),
+            None,
         )
 
         if not auth_account:
-            raise AuthProviderNotLinkedError
+            raise AuthProviderNotLinkedError()
 
         auth_account.auth_provider_user_id = AuthProviderUserId(new_identifier)
         await self.auth_account_repository.save(auth_account)
@@ -106,7 +108,9 @@ class AuthAccountService(BaseAuthAccountService):
         auth_provider: str,
     ) -> bool:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
-        has_target = any(acc.auth_provider == auth_provider for acc in auth_accounts)
+        has_target = any(
+            acc.auth_provider.value == auth_provider for acc in auth_accounts
+        )
 
         if len(auth_accounts) > 1 and has_target:
             return True
