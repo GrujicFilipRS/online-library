@@ -49,6 +49,18 @@ async def test_get_user_by_username(user_repo):
     assert get_user.user_id == user.user_id
 
 
-async def test_get_nonexistent_player_returns_none(user_repo):
+async def test_get_nonexistent_user_returns_none(user_repo):
     assert await user_repo.get_by_id(uuid4()) is None
     assert await user_repo.get_by_username("ril737") is None
+
+
+async def test_delete_user(user_repo):
+    user = User.create("ril737", "73")
+
+    await user_repo.save(user)
+
+    await user_repo.delete(user)
+
+    get_user = await user_repo.get_by_username("ril737")
+
+    assert get_user is None
