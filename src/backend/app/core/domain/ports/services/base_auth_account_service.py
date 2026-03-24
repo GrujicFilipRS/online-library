@@ -26,6 +26,7 @@ class BaseAuthAccountService(ABC):
         self,
         user_id: UUID,
         auth_provider: AuthProvider,
+        is_password_set: bool,
     ) -> None: ...
 
     @abstractmethod
