@@ -10,8 +10,6 @@ class CookiesUtils:
     def set_auth_cookies(
         response: Response, access_token: str, refresh_token: str, csrf_token: str
     ) -> None:
-        max_age = int(config.ACCESS_TTL.total_seconds())
-
         response.set_cookie(
             key="access_token",
             value=access_token,
@@ -20,7 +18,7 @@ class CookiesUtils:
             samesite=config.COOKIE_SAMESITE,  # type: ignore
             domain=config.COOKIE_DOMAIN,
             path="/",
-            max_age=max_age,
+            max_age=int(config.ACCESS_TTL.total_seconds()),
         )
 
         response.set_cookie(
@@ -31,7 +29,7 @@ class CookiesUtils:
             samesite=config.COOKIE_SAMESITE,  # type: ignore
             domain=config.COOKIE_DOMAIN,
             path="/auth/refresh",
-            max_age=max_age,
+            max_age=int(config.REFRESH_TTL.total_seconds()),
         )
 
         response.set_cookie(
@@ -42,7 +40,7 @@ class CookiesUtils:
             samesite=config.COOKIE_SAMESITE,  # type: ignore
             domain=config.COOKIE_DOMAIN,
             path="/",
-            max_age=max_age,
+            max_age=int(config.REFRESH_TTL.total_seconds()),
         )
 
     @staticmethod
