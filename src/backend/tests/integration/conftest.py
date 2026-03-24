@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import (
 
 from src.backend.app.core.infrastructure.db_models import *
 from src.backend.app.core.infrastructure.repositories.sqlal import (
+    SqlAlchemyAuthAccountRepository,
     SqlAlchemyUserRepository,
 )
 from src.backend.app.shared.utils import Base
@@ -72,3 +73,8 @@ async def db_sess(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, Any]
 @pytest.fixture
 async def user_repo(db_sess):
     return SqlAlchemyUserRepository(db_sess)
+
+
+@pytest.fixture
+async def auth_account_repo(db_sess):
+    return SqlAlchemyAuthAccountRepository(db_sess)

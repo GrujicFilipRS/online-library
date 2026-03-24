@@ -52,9 +52,9 @@ class InMemoryAuthAccountRepository(BaseAuthAccountRepository):
             return None
         self.inm_storage.auth_accounts[existing_index] = auth_account
 
-    async def delete(self, auth_account_id: UUID) -> None:
+    async def delete(self, auth_account: AuthAccount) -> None:
         self.inm_storage.auth_accounts = [
             account
             for account in self.inm_storage.auth_accounts
-            if account.auth_account_id != auth_account_id
+            if account.auth_account_id != auth_account.auth_account_id
         ]
