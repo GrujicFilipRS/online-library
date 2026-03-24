@@ -13,6 +13,7 @@ class UnlinkProviderUseCase:
 
     async def execute(self, user_id: UUID, provider: AuthProvider) -> None:
         async with self.auth_account_uow_factory() as uow:
-            await uow.auth_account_service.unlink_auth_provider_from_user(
-                user_id, provider
+            has_password_set = await uow.user_service.has_password_set(user_id)
+            await uow.auth_account_service.unlink_provider_from_user(
+                user_id, provider, has_password_set
             )

@@ -8,18 +8,13 @@ from ...domain.exceptions import (
 )
 from ...domain.models import AuthAccount
 from ...domain.ports.repositories import BaseAuthAccountRepository
-from ...domain.ports.services import BaseAuthAccountService, BaseUserService
+from ...domain.ports.services import BaseAuthAccountService
 from ...domain.value_objects import AuthProvider, AuthProviderUserId
 
 
 class AuthAccountService(BaseAuthAccountService):
-    def __init__(
-        self,
-        auth_account_repository: BaseAuthAccountRepository,
-        user_service: BaseUserService,
-    ):
+    def __init__(self, auth_account_repository: BaseAuthAccountRepository):
         self.auth_account_repository = auth_account_repository
-        self.user_service = user_service
 
     async def link_auth_provider_to_user(
         self,
@@ -53,9 +48,7 @@ class AuthAccountService(BaseAuthAccountService):
         return auth_account
 
     async def unlink_auth_provider_from_user(
-        self,
-        user_id: UUID,
-        auth_provider: AuthProvider,
+        self, user_id: UUID, auth_provider: AuthProvider, has_password_set: bool
     ) -> None:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         if not auth_accounts:
@@ -68,7 +61,10 @@ class AuthAccountService(BaseAuthAccountService):
         if not auth_account:
             raise AuthProviderNotLinkedError()
 
-        if not await self.is_unlink_safe(user_id, auth_provider):
+        if (
+            not await self.is_unlink_safe(user_id, auth_provider)
+            and not has_password_set
+        ):
             raise AuthProviderUnlinkNotSafeError()
 
         await self.auth_account_repository.delete(auth_account.auth_account_id)
@@ -110,9 +106,6 @@ class AuthAccountService(BaseAuthAccountService):
     ) -> bool:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)
         has_target = any(acc.auth_provider == auth_provider for acc in auth_accounts)
-
-        if await self.user_service.has_password_set(user_id):
-            return True
 
         if len(auth_accounts) > 1 and has_target:
             return True
