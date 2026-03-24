@@ -26,6 +26,12 @@ async def test_engine() -> AsyncGenerator[AsyncEngine, Any]:
         future=True,
     )
 
+    @event.listens_for(engine.sync_engine, "connect")
+    def enable_sqlite_fk(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
