@@ -1,6 +1,5 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka, inject
 from fastapi import APIRouter, Response
-from fastapi.security import OAuth2PasswordBearer
 
 from ......shared.infra.dto import BaseResponseDTO
 from ......shared.utils.auth import CookiesUtils
@@ -14,8 +13,6 @@ from ..schemas import (
     RegisterViaPasswordRequestSchema,
     RegisterViaPasswordResponseSchema,
 )
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login_via_password")
 
 auth_router = APIRouter(prefix="/auth", route_class=DishkaRoute)
 

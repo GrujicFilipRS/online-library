@@ -1,4 +1,4 @@
-from .users_schemas import (
+from .auth_schemas import (
     LoginViaPasswordRequestSchema,
     RegisterViaPasswordRequestSchema,
     RegisterViaPasswordResponseSchema,
