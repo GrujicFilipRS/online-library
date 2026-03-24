@@ -57,6 +57,6 @@ class SqlAlchemyUserRepository(BaseUserRepository):
         )
         await self.db_sess.flush()
 
-    async def delete(self, user: User) -> None:
-        await self.db_sess.execute(delete(DBUser).where(DBUser.user_id == user.user_id))
+    async def delete(self, user_id: UUID) -> None:
+        await self.db_sess.execute(delete(DBUser).where(DBUser.user_id == user_id))
         await self.db_sess.flush()

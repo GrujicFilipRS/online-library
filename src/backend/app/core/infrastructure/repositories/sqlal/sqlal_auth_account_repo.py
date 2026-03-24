@@ -78,10 +78,10 @@ class SqlAlchemyAuthAccountRepository(BaseAuthAccountRepository):
         )
         await self.db_sess.flush()
 
-    async def delete(self, auth_account: AuthAccount) -> None:
+    async def delete(self, auth_account_id: UUID) -> None:
         await self.db_sess.execute(
             delete(DBAuthAccount).where(
-                DBAuthAccount.auth_account_id == auth_account.auth_account_id
+                DBAuthAccount.auth_account_id == auth_account_id
             )
         )
         await self.db_sess.flush()

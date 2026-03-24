@@ -144,7 +144,7 @@ async def test_delete_auth_account(auth_account_repo, user_repo):
 
     get_auth_account = await auth_account_repo.get_by_id(auth_account.auth_account_id)
 
-    await auth_account_repo.delete(get_auth_account)
+    await auth_account_repo.delete(get_auth_account.auth_account_id)
 
     get_auth_account = await auth_account_repo.get_by_id(auth_account.auth_account_id)
 

@@ -67,7 +67,7 @@ async def test_delete_user(user_repo):
 
     await user_repo.save(user)
 
-    await user_repo.delete(user)
+    await user_repo.delete(user.user_id)
 
     get_user = await user_repo.get_by_username("ril737")
 
