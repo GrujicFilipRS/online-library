@@ -14,7 +14,7 @@ class RefreshSession:
 class RefreshSessionStorage:
     @staticmethod
     def _key(jwt_id: UUID) -> str:
-        return f"refresh:{jwt_id}"
+        return f"refresh:{jwt_id.hex}"
 
     @classmethod
     async def create(
@@ -24,7 +24,7 @@ class RefreshSessionStorage:
         sess_id: UUID,
         ttl_seconds: int,
     ) -> None:
-        payload = dumps({"sub": str(user_id), "sid": str(sess_id)})
+        payload = dumps({"sub": user_id.hex, "sid": sess_id.hex})
         await RedisClient.set(cls._key(jwt_id), payload, ex=ttl_seconds)
 
     @classmethod
