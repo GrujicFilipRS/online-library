@@ -23,11 +23,17 @@ auth_router = APIRouter(prefix="/auth", route_class=DishkaRoute)
 @inject
 async def register_via_password(
     user_data: RegisterViaPasswordRequestSchema,
-    register_via_password: FromDishka[RegisterViaPasswordUseCase],
+    register_usecase: FromDishka[RegisterViaPasswordUseCase],
+    response: Response,
 ):
     username, password = user_data.username, user_data.password
-    user = await register_via_password.execute(username, password)
+    user, access_token, refresh_token, csrf_token = await register_usecase.execute(
+        username, password
+    )
     user_dto = UserMapper.to_dto(user)
+
+    CookiesUtils.set_auth_cookies(response, access_token, refresh_token, csrf_token)
+
     return {
         "success": True,
         "message": "successfully registered new user",
@@ -40,11 +46,11 @@ async def register_via_password(
 @inject
 async def login_via_password(
     user_data: LoginViaPasswordRequestSchema,
-    login_via_password: FromDishka[LoginViaPasswordUseCase],
+    login_usecase: FromDishka[LoginViaPasswordUseCase],
     response: Response,
 ):
     username, password = user_data.username, user_data.password
-    access_token, refresh_token, csrf_token = await login_via_password.execute(
+    access_token, refresh_token, csrf_token = await login_usecase.execute(
         username, password
     )
     CookiesUtils.set_auth_cookies(response, access_token, refresh_token, csrf_token)
