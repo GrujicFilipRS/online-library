@@ -3,4 +3,9 @@ from .base_auth_service import BaseAuthService
 from .base_author_service import BaseAuthorService
 from .base_user_service import BaseUserService
 
-__all__ = ["BaseUserService", "BaseAuthAccountService", "BaseAuthorService", "BaseAuthService"]
+__all__ = [
+    "BaseUserService",
+    "BaseAuthAccountService",
+    "BaseAuthorService",
+    "BaseAuthService",
+]
