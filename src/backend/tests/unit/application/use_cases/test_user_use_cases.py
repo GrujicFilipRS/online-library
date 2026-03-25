@@ -1,7 +1,7 @@
 from src.backend.app.core.domain.models import User
 
 
-async def test_register_and_login_via_password(
+async def test_register_and_login_via_password_use_cases(
     register_via_password, login_via_password
 ):
     username = "ril737"
