@@ -14,11 +14,11 @@ class UserService(BaseUserService):
     def __init__(self, user_repo: BaseUserRepository):
         self.user_repo = user_repo
 
-    async def create_user(self, username: str, password: str) -> User:
+    async def create_user(self, username: str, password: str | None) -> User:
         existing = await self.user_repo.get_by_username(username)
         if existing is not None:
             raise UserAlreadyExistsError("username already taken")
-        hashed_password = await AuthUtils.hash_password(password)
+        hashed_password = await AuthUtils.hash_password(password) if password else None
         user = User.create(username, hashed_password)
         await self.user_repo.save(user)
         return user

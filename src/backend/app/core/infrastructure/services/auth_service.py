@@ -21,6 +21,9 @@ class AuthService(BaseAuthService):
         self.refresh_sess_store = refresh_sess_store
 
     async def login_user(self, user: User, password: str) -> tuple[str, str, str]:
+        if user.hashed_password is None:
+            raise InvalidCredentialsError("invalid credentials")
+
         if not await AuthUtils.verify_password(password, user.hashed_password):
             raise InvalidCredentialsError("invalid credentials")
 
