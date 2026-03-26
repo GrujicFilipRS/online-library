@@ -30,9 +30,9 @@ class InMemoryUserRepository(BaseUserRepository):
         self.inm_storage.users.append(user)
         return None
 
-    async def delete(self, user: User) -> None:
+    async def delete(self, user_id: UUID) -> None:
         for user_ in self.inm_storage.users:
-            if user_.user_id == user.user_id:
+            if user_.user_id == user_id:
                 self.inm_storage.users.remove(user_)
                 return None
         return None

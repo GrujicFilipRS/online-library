@@ -1,13 +1,13 @@
 from .authenticate import AutheticateUseCase
-from .change_provider_identifier import ChangeProviderIdentifierUseCase
-from .link_provider import LinkProviderUseCase
-from .list_providers import ListProvidersUseCase
-from .unlink_provider import UnlinkProviderUseCase
+from .change_auth_provider_identifier import ChangeAuthProviderIdentifierUseCase
+from .link_auth_provider import LinkAuthProviderUseCase
+from .list_auth_providers import ListAuthProvidersUseCase
+from .unlink_auth_provider import UnlinkAuthProviderUseCase
 
 __all__ = [
     "AutheticateUseCase",
-    "LinkProviderUseCase",
-    "ChangeProviderIdentifierUseCase",
-    "ListProvidersUseCase",
-    "UnlinkProviderUseCase",
+    "LinkAuthProviderUseCase",
+    "ChangeAuthProviderIdentifierUseCase",
+    "ListAuthProvidersUseCase",
+    "UnlinkAuthProviderUseCase",
 ]

@@ -2,7 +2,6 @@ from collections.abc import Callable
 
 from ....domain.models import AuthAccount
 from ....domain.ports.units_of_work import BaseAuthAccountUnitOfWork
-from ....domain.value_objects import AuthProvider, AuthProviderUserId
 
 
 class AutheticateUseCase:
@@ -11,9 +10,7 @@ class AutheticateUseCase:
     ):
         self.auth_account_uow_factory = auth_account_uow_factory
 
-    async def execute(
-        self, provider: AuthProvider, provider_user_id: AuthProviderUserId
-    ) -> AuthAccount:
+    async def execute(self, provider: str, provider_user_id: str) -> AuthAccount:
         async with self.auth_account_uow_factory() as uow:
             auth_account = (
                 await uow.auth_account_service.authenticate_via_auth_provider(
