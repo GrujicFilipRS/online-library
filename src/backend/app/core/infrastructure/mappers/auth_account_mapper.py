@@ -27,15 +27,15 @@ class AuthAccountMapper:
             created_at=auth_account.created_at,
         )
 
-    @staticmethod
-    def update_orm(
-        auth_account: AuthAccount,
-        db_auth_account: DBAuthAccount,
-    ) -> DBAuthAccount:
-        """explicict way to make sqlalchemy use UPDATE and avoid primary key conflicts"""
-        db_auth_account.auth_provider = auth_account.auth_provider.value
-        db_auth_account.auth_provider_user_id = auth_account.auth_provider_user_id.value
-        return db_auth_account
+    # @staticmethod
+    # def update_orm(
+    #    auth_account: AuthAccount,
+    #    db_auth_account: DBAuthAccount,
+    # ) -> DBAuthAccount:
+    #    """explicict way to make sqlalchemy use UPDATE and avoid primary key conflicts"""
+    #    db_auth_account.auth_provider = auth_account.auth_provider.value
+    #    db_auth_account.auth_provider_user_id = auth_account.auth_provider_user_id.value
+    #    return db_auth_account
 
     @staticmethod
     def to_dto(auth_account: AuthAccount) -> AuthAccountDTO:

@@ -1,6 +1,6 @@
 from ...domain.ports import BaseUnitOfWork
 from ...utils import StructuredLogger
-from .inm_storage import InMemoryStorage
+from ..inm_storage import InMemoryStorage
 
 
 class InMemoryUnitOfWork(BaseUnitOfWork):

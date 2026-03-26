@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ....domain.models import AuthAccount
@@ -59,18 +59,29 @@ class SqlAlchemyAuthAccountRepository(BaseAuthAccountRepository):
                 DBAuthAccount.auth_account_id == auth_account.auth_account_id
             )
         )
-        db_auth_account = query.scalar_one_or_none()
-        if db_auth_account:
-            AuthAccountMapper.update_orm(auth_account, db_auth_account)
-        else:
-            new_db_auth_account = AuthAccountMapper.to_orm(auth_account)
-            self.db_sess.add(new_db_auth_account)
+        result = query.scalar_one_or_none()
+
+        if result is None:
+            db_auth_account = AuthAccountMapper.to_orm(auth_account)
+            self.db_sess.add(db_auth_account)
+            await self.db_sess.flush()
+            return
+
+        query = await self.db_sess.execute(
+            update(DBAuthAccount)
+            .where(DBAuthAccount.auth_account_id == auth_account.auth_account_id)
+            .values(
+                auth_provider=auth_account.auth_provider.value,
+                auth_provider_user_id=auth_account.auth_provider_user_id.value,
+            )
+            .execution_options(synchronize_session="fetch")
+        )
         await self.db_sess.flush()
 
-    async def delete(self, auth_account_id: UUID) -> None:
+    async def delete(self, auth_account: AuthAccount) -> None:
         await self.db_sess.execute(
             delete(DBAuthAccount).where(
-                DBAuthAccount.auth_account_id == auth_account_id
+                DBAuthAccount.auth_account_id == auth_account.auth_account_id
             )
         )
         await self.db_sess.flush()

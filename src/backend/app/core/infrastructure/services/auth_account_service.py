@@ -67,7 +67,7 @@ class AuthAccountService(BaseAuthAccountService):
         ):
             raise AuthProviderUnlinkNotSafeError()
 
-        await self.auth_account_repository.delete(auth_account.auth_account_id)
+        await self.auth_account_repository.delete(auth_account)
 
     async def list_user_auth_providers(self, user_id: UUID) -> list[AuthAccount]:
         auth_accounts = await self.auth_account_repository.get_by_user_id(user_id)

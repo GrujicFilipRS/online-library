@@ -1,5 +1,5 @@
 from .auth import AuthUtils
 from .cookies import CookiesUtils
-from .refresh_sess_store import RefreshSessionStorage
+from .csrf_guard import CSRFGuard
 
-__all__ = ["AuthUtils", "CookiesUtils", "RefreshSessionStorage"]
+__all__ = ["AuthUtils", "CookiesUtils", "CSRFGuard"]
