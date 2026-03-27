@@ -12,8 +12,11 @@ async def test_authenticate_use_case(
 
     provider = "github"
     provider_user_id = uuid4().hex
-    await link_auth_provider.execute(user.user_id, provider, provider_user_id)
+    auth_account = await link_auth_provider.execute(
+        user.user_id, provider, provider_user_id
+    )
 
-    auth_account = await authenticate.execute(provider, provider_user_id)
+    get_auth_account = await authenticate.execute(provider, provider_user_id)
 
-    assert isinstance(auth_account, AuthAccount)
+    assert isinstance(get_auth_account, AuthAccount)
+    assert get_auth_account.auth_account_id == auth_account.auth_account_id
