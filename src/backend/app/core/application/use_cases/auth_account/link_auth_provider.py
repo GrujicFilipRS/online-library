@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from uuid import UUID
 
+from ....domain.models import AuthAccount
 from ....domain.ports.units_of_work import BaseAuthAccountUnitOfWork
 
 
@@ -15,8 +16,11 @@ class LinkAuthProviderUseCase:
         user_id: UUID,
         provider: str,
         provider_user_id: str,
-    ) -> None:
+    ) -> AuthAccount:
         async with self.auth_account_uow_factory() as auth_account_uow:
-            await auth_account_uow.auth_account_service.link_auth_provider_to_user(
-                user_id, provider, provider_user_id
+            auth_account = (
+                await auth_account_uow.auth_account_service.link_auth_provider_to_user(
+                    user_id, provider, provider_user_id
+                )
             )
+            return auth_account
