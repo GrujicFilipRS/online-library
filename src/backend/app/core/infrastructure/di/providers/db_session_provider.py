@@ -15,7 +15,7 @@ class DBSessionProvider(Provider):
         self._db_sess = db_sess
 
     @provide(scope=Scope.REQUEST)
-    async def db_sess(self) -> AsyncGenerator[AsyncSession, Any]:
+    async def provide_db_sess(self) -> AsyncGenerator[AsyncSession, Any]:
         """
         Provides an asynchronous database session for each request.
         Used inside the async with context manager.
