@@ -7,14 +7,15 @@ from ....application.use_cases.auth_account import (
     ChangeAuthProviderIdentifierUseCase,
     LinkAuthProviderUseCase,
     ListAuthProvidersUseCase,
-    UnlinkAuthProviderUseCase,
 )
 from ....application.use_cases.user import (
     LoginViaPasswordUseCase,
     RegisterViaPasswordUseCase,
 )
+from ....application.use_cases.user_auth import UnlinkAuthProviderUseCase
 from ...units_of_work.sqlal import (
     SqlAlchemyAuthAccountUnitOfWork,
+    SqlAlchemyUserAuthUnitOfWork,
     SqlAlchemyUserUnitOfWork,
 )
 
@@ -60,6 +61,6 @@ class UseCaseProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def provide_unlink_auth_provider(
-        self, auth_account_uow_factory: Callable[[], SqlAlchemyAuthAccountUnitOfWork]
+        self, user_auth_uow_factory: Callable[[], SqlAlchemyUserAuthUnitOfWork]
     ) -> UnlinkAuthProviderUseCase:
-        return UnlinkAuthProviderUseCase(auth_account_uow_factory)
+        return UnlinkAuthProviderUseCase(user_auth_uow_factory)

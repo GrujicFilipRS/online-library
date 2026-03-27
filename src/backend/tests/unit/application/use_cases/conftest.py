@@ -5,13 +5,15 @@ from src.backend.app.core.application.use_cases.auth_account import (
     ChangeAuthProviderIdentifierUseCase,
     LinkAuthProviderUseCase,
     ListAuthProvidersUseCase,
-    UnlinkAuthProviderUseCase,
 )
 from src.backend.app.core.application.use_cases.user import (
     LoginViaPasswordUseCase,
     RegisterViaPasswordUseCase,
 )
-from src.backend.app.core.application.use_cases.user_auth import LoginViaProviderUseCase
+from src.backend.app.core.application.use_cases.user_auth import (
+    LoginViaProviderUseCase,
+    UnlinkAuthProviderUseCase,
+)
 from src.backend.app.core.infrastructure.units_of_work.inmemory import (
     InMemoryAuthAccountUnitOfWork,
     InMemoryUserAuthUnitOfWork,
@@ -71,10 +73,10 @@ async def list_auth_providers(auth_account_uow_factory):
 
 
 @pytest.fixture
-async def unlink_auth_provider(auth_account_uow_factory):
-    return UnlinkAuthProviderUseCase(auth_account_uow_factory)
+async def login_via_auth_provider(user_auth_uow_factory):
+    return LoginViaProviderUseCase(user_auth_uow_factory)
 
 
 @pytest.fixture
-async def login_via_auth_provider(user_auth_uow_factory):
-    return LoginViaProviderUseCase(user_auth_uow_factory)
+async def unlink_auth_provider(user_auth_uow_factory):
+    return UnlinkAuthProviderUseCase(user_auth_uow_factory)

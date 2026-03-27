@@ -104,92 +104,6 @@ async def test_authenticate_nonexistent_auth_provider_raises(
         )
 
 
-async def test_link_and_unlink_auth_providers_successfully(
-    auth_account_service, user_service
-):
-    username = "ril737"
-    password = "73"
-    user = await user_service.create_user(username, password)
-
-    auth_provider1 = "google"
-    auth_provider2 = "github"
-    auth_provider3 = "apple"
-    auth_provider_user_id = uuid4().hex
-
-    await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider1, auth_provider_user_id
-    )
-    await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider2, auth_provider_user_id
-    )
-    await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider3, auth_provider_user_id
-    )
-
-    await auth_account_service.unlink_auth_provider_from_user(
-        user.user_id,
-        auth_provider1,
-        True,
-    )
-    await auth_account_service.unlink_auth_provider_from_user(
-        user.user_id,
-        auth_provider2,
-        True,
-    )
-    await auth_account_service.unlink_auth_provider_from_user(
-        user.user_id,
-        auth_provider3,
-        True,
-    )
-
-    with pytest.raises(AuthProviderNotLinkedError):
-        await auth_account_service.authenticate_via_auth_provider(
-            auth_provider1, auth_provider_user_id
-        )
-
-    with pytest.raises(AuthProviderNotLinkedError):
-        await auth_account_service.authenticate_via_auth_provider(
-            auth_provider2, auth_provider_user_id
-        )
-
-    with pytest.raises(AuthProviderNotLinkedError):
-        await auth_account_service.authenticate_via_auth_provider(
-            auth_provider3, auth_provider_user_id
-        )
-
-
-async def test_unlink_nonexistent_auth_provider_raises(
-    auth_account_service, user_service
-):
-    username = "ril737"
-    password = "73"
-    user = await user_service.create_user(username, password)
-
-    auth_provider1 = "github"
-    auth_provider_user_id = uuid4().hex
-    await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider1, auth_provider_user_id
-    )
-
-    auth_provider2 = "googl"
-
-    with pytest.raises(AuthProviderNotLinkedError):
-        await auth_account_service.unlink_auth_provider_from_user(
-            user.user_id,
-            auth_provider2,
-            True,
-        )
-
-
-async def test_unlink_auth_provider_nonexistent_user_raises(auth_account_service):
-    with pytest.raises(UserNotFoundError):
-        await auth_account_service.unlink_auth_provider_from_user(
-            uuid4(),
-            "github",
-            True,
-        )
-
-
 async def test_list_user_auth_providers_successfully(
     auth_account_service, user_service
 ):
@@ -198,18 +112,21 @@ async def test_list_user_auth_providers_successfully(
     user = await user_service.create_user(username, password)
 
     auth_provider1 = "google"
-    auth_provider2 = "github"
-    auth_provider3 = "apple"
-    auth_provider_user_id = uuid4().hex
+    auth_provider_user_id1 = uuid4().hex
+    await auth_account_service.link_auth_provider_to_user(
+        user.user_id, auth_provider1, auth_provider_user_id1
+    )
 
+    auth_provider2 = "github"
+    auth_provider_user_id2 = uuid4().hex
     await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider1, auth_provider_user_id
+        user.user_id, auth_provider2, auth_provider_user_id2
     )
+
+    auth_provider3 = "apple"
+    auth_provider_user_id3 = uuid4().hex
     await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider2, auth_provider_user_id
-    )
-    await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider3, auth_provider_user_id
+        user.user_id, auth_provider3, auth_provider_user_id3
     )
 
     auth_providers = await auth_account_service.list_user_auth_providers(user.user_id)

@@ -79,13 +79,13 @@ async def test_list_auth_providers_use_case(
         user.user_id, auth_provider1, auth_provider_user_id1
     )
 
-    auth_provider2 = "github"
+    auth_provider2 = "google"
     auth_provider_user_id2 = uuid4().hex
     await link_auth_provider.execute(
         user.user_id, auth_provider2, auth_provider_user_id2
     )
 
-    auth_provider3 = "github"
+    auth_provider3 = "apple"
     auth_provider_user_id3 = uuid4().hex
     await link_auth_provider.execute(
         user.user_id, auth_provider3, auth_provider_user_id3
