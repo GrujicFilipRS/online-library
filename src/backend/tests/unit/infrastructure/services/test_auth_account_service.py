@@ -4,6 +4,7 @@ import pytest
 
 from src.backend.app.core.domain.exceptions import (
     AuthProviderAccountAlreadyInUseError,
+    AuthProviderAlreadyLinkedError,
     AuthProviderNotLinkedError,
     UserNotFoundError,
 )
@@ -74,14 +75,21 @@ async def test_link_auth_provider_to_user_duplicate_raises(
     user = await user_service.create_user(username, password)
 
     auth_provider = "google"
-    auth_provider_user_id = uuid4().hex
+    auth_provider_user_id1 = uuid4().hex
     await auth_account_service.link_auth_provider_to_user(
-        user.user_id, auth_provider, auth_provider_user_id
+        user.user_id, auth_provider, auth_provider_user_id1
     )
 
     with pytest.raises(AuthProviderAccountAlreadyInUseError):
         await auth_account_service.link_auth_provider_to_user(
-            user.user_id, auth_provider, auth_provider_user_id
+            user.user_id, auth_provider, auth_provider_user_id1
+        )
+
+    # providers of user's auth accounts must be unique
+    auth_provider_user_id2 = uuid4().hex
+    with pytest.raises(AuthProviderAlreadyLinkedError):
+        await auth_account_service.link_auth_provider_to_user(
+            user.user_id, auth_provider, auth_provider_user_id2
         )
 
 

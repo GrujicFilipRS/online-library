@@ -57,6 +57,11 @@ class AuthProviderAccountAlreadyInUseError(DomainError):
 
 
 @dataclass
+class AuthProviderAlreadyLinkedError(DomainError):
+    message = "AuthProviderAlreadyLinkedError"
+
+
+@dataclass
 class AuthProviderNotLinkedError(DomainError):
     message = "AuthProviderNotLinkedError"
 

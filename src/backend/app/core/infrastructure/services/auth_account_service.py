@@ -2,6 +2,7 @@ from uuid import UUID
 
 from ...domain.exceptions import (
     AuthProviderAccountAlreadyInUseError,
+    AuthProviderAlreadyLinkedError,
     AuthProviderNotLinkedError,
     AuthProviderUnlinkNotSafeError,
     UserNotFoundError,
@@ -27,6 +28,16 @@ class AuthAccountService(BaseAuthAccountService):
         )
         if existing_acc:
             raise AuthProviderAccountAlreadyInUseError()
+
+        auth_accounts = await self.list_user_auth_providers(user_id)
+
+        auth_account = next(
+            (acc for acc in auth_accounts if acc.auth_provider.value == auth_provider),
+            None,
+        )
+
+        if auth_account is not None:
+            raise AuthProviderAlreadyLinkedError()
 
         auth_account = AuthAccount.create(user_id, auth_provider, auth_provider_user_id)
         await self.auth_account_repository.save(auth_account)
