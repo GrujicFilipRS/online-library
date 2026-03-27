@@ -1,5 +1,5 @@
-from .....shared.infra.inm_storage import InMemoryStorage
-from .....shared.infra.units_of_work import InMemoryUnitOfWork
+from .....shared.infrastructure.inm_storage import InMemoryStorage
+from .....shared.infrastructure.units_of_work import InMemoryUnitOfWork
 from ....domain.ports.units_of_work import BaseAuthAccountUnitOfWork
 from ...repositories.inmemory import InMemoryAuthAccountRepository
 from ...services import AuthAccountService

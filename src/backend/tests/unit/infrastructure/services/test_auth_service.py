@@ -4,7 +4,7 @@ from src.backend.app.core.domain.exceptions import (
     InvalidCredentialsError,
 )
 from src.backend.app.core.infrastructure.services import AuthService, UserService
-from src.backend.app.shared.infra.refresh_sess_stores import (
+from src.backend.app.shared.infrastructure.refresh_sess_stores import (
     InMemoryRefreshSessionStorage,
 )
 

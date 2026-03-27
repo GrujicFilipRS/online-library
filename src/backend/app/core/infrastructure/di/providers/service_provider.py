@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
 
-from .....shared.infra.refresh_sess_stores import RedisRefreshSessionStorage
+from .....shared.infrastructure.refresh_sess_stores import RedisRefreshSessionStorage
 from ...repositories.sqlal import (
     SqlAlchemyAuthAccountRepository,
     SqlAlchemyUserRepository,

@@ -15,7 +15,7 @@ from src.backend.app.core.infrastructure.units_of_work.inmemory import (
     InMemoryAuthAccountUnitOfWork,
     InMemoryUserUnitOfWork,
 )
-from src.backend.app.shared.infra.inm_storage import InMemoryStorage
+from src.backend.app.shared.infrastructure.inm_storage import InMemoryStorage
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ......shared.infra.dto import BaseResponseDTO
+from ......shared.infrastructure.dto import BaseResponseDTO
 from .....infrastructure.dto.users_dto import UserDTO
 
 

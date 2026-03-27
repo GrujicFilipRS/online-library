@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .....shared.infra.refresh_sess_stores import RedisRefreshSessionStorage
-from .....shared.infra.units_of_work import SqlAlchemyUnitOfWork
+from .....shared.infrastructure.refresh_sess_stores import RedisRefreshSessionStorage
+from .....shared.infrastructure.units_of_work import SqlAlchemyUnitOfWork
 from ....domain.ports.units_of_work import BaseUserUnitOfWork
 from ...repositories.sqlal import SqlAlchemyUserRepository
 from ...services import AuthService, UserService

@@ -1,6 +1,6 @@
-from .....shared.infra.inm_storage import InMemoryStorage
-from .....shared.infra.refresh_sess_stores import InMemoryRefreshSessionStorage
-from .....shared.infra.units_of_work import InMemoryUnitOfWork
+from .....shared.infrastructure.inm_storage import InMemoryStorage
+from .....shared.infrastructure.refresh_sess_stores import InMemoryRefreshSessionStorage
+from .....shared.infrastructure.units_of_work import InMemoryUnitOfWork
 from ....domain.ports.units_of_work import BaseUserUnitOfWork
 from ...repositories.inmemory import InMemoryUserRepository
 from ...services import AuthService, UserService

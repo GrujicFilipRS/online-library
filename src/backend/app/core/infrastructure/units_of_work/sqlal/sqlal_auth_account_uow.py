@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .....shared.infra.units_of_work import SqlAlchemyUnitOfWork
+from .....shared.infrastructure.units_of_work import SqlAlchemyUnitOfWork
 from ....domain.ports.units_of_work import BaseAuthAccountUnitOfWork
 from ...repositories.sqlal import SqlAlchemyAuthAccountRepository
 from ...services import AuthAccountService

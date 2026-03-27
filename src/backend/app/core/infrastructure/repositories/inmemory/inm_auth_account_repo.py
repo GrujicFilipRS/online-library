@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from .....shared.infra.inm_storage import InMemoryStorage
+from .....shared.infrastructure.inm_storage import InMemoryStorage
 from ....domain.models import AuthAccount
 from ....domain.ports.repositories import BaseAuthAccountRepository
 

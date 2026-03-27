@@ -1,7 +1,7 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka, inject
 from fastapi import APIRouter, Response
 
-from ......shared.infra.dto import BaseResponseDTO
+from ......shared.infrastructure.dto import BaseResponseDTO
 from ......shared.utils.auth import CookiesUtils
 from .....application.use_cases.user import (
     LoginViaPasswordUseCase,
