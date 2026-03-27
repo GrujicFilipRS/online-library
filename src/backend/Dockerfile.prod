@@ -29,4 +29,8 @@ COPY --from=builder /app /app
 
 EXPOSE 8000
 
-CMD ["/app/.venv/bin/fastapi", "run", "src/backend/main.py", "--host", "0.0.0.0", "--port", "8000"]
+COPY ./src/backend/entrypoint.prod.sh ./
+
+RUN chmod +x entrypoint.prod.sh
+
+CMD ["entrypoint.prod.sh"]
