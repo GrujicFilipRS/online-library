@@ -56,7 +56,7 @@ async def authenticate(auth_account_uow_factory):
 
 
 @pytest.fixture
-async def change_provider_identifier(auth_account_uow_factory):
+async def change_auth_provider_identifier(auth_account_uow_factory):
     return ChangeAuthProviderIdentifierUseCase(auth_account_uow_factory)
 
 
