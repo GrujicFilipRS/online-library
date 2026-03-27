@@ -11,8 +11,10 @@ from src.backend.app.core.application.use_cases.user import (
     LoginViaPasswordUseCase,
     RegisterViaPasswordUseCase,
 )
+from src.backend.app.core.application.use_cases.user_auth import LoginViaProviderUseCase
 from src.backend.app.core.infrastructure.units_of_work.inmemory import (
     InMemoryAuthAccountUnitOfWork,
+    InMemoryUserAuthUnitOfWork,
     InMemoryUserUnitOfWork,
 )
 from src.backend.app.shared.infrastructure.inm_storage import InMemoryStorage
@@ -31,6 +33,11 @@ async def user_uow_factory(inm_storage):
 @pytest.fixture
 async def auth_account_uow_factory(inm_storage):
     return lambda: InMemoryAuthAccountUnitOfWork(inm_storage)
+
+
+@pytest.fixture
+async def user_auth_uow_factory(inm_storage):
+    return lambda: InMemoryUserAuthUnitOfWork(inm_storage)
 
 
 @pytest.fixture
@@ -66,3 +73,8 @@ async def list_auth_providers(auth_account_uow_factory):
 @pytest.fixture
 async def unlink_auth_provider(auth_account_uow_factory):
     return UnlinkAuthProviderUseCase(auth_account_uow_factory)
+
+
+@pytest.fixture
+async def login_via_auth_provider(user_auth_uow_factory):
+    return LoginViaProviderUseCase(user_auth_uow_factory)
