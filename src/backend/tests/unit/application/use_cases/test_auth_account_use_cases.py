@@ -64,3 +64,34 @@ async def test_change_auth_provider_identifier_use_case(
 
     assert isinstance(get_auth_account, AuthAccount)
     assert get_auth_account.auth_account_id == auth_account.auth_account_id
+
+
+async def test_list_auth_providers_use_case(
+    register_via_password, link_auth_provider, list_auth_providers
+):
+    username = "ril737"
+    password = "73"
+    user = (await register_via_password.execute(username, password))[0]
+
+    auth_provider1 = "github"
+    auth_provider_user_id1 = uuid4().hex
+    await link_auth_provider.execute(
+        user.user_id, auth_provider1, auth_provider_user_id1
+    )
+
+    auth_provider2 = "github"
+    auth_provider_user_id2 = uuid4().hex
+    await link_auth_provider.execute(
+        user.user_id, auth_provider2, auth_provider_user_id2
+    )
+
+    auth_provider3 = "github"
+    auth_provider_user_id3 = uuid4().hex
+    await link_auth_provider.execute(
+        user.user_id, auth_provider3, auth_provider_user_id3
+    )
+
+    auth_accounts = await list_auth_providers.execute(user.user_id)
+
+    assert isinstance(auth_accounts, list)
+    assert len(auth_accounts) == 3
