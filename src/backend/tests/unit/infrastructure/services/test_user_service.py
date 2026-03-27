@@ -27,6 +27,18 @@ async def test_create_and_get_user_successfully(user_service):
     assert get_user.created_at == user.created_at
 
 
+async def test_create_and_get_user_null_password(user_service):
+    username = "ril737"
+
+    user = await user_service.create_user(username, None)
+    get_user = await user_service.get_user_by_id(user.user_id)
+
+    assert get_user.username.value == user.username.value
+    assert get_user.hashed_password == user.hashed_password
+    assert get_user.role.value == user.role.value
+    assert get_user.created_at == user.created_at
+
+
 async def test_create_user_with_duplicate_name_raises(user_service):
     username = "ril737"
     password = "73"

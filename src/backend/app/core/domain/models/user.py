@@ -10,7 +10,7 @@ class User:
         self,
         user_id: UUID,
         username: UserName,
-        hashed_password: str,
+        hashed_password: str | None,
         role: UserRole,
         created_at: datetime,
     ) -> None:
@@ -22,7 +22,7 @@ class User:
         self.created_at = created_at
 
     @classmethod
-    def create(cls, username: str, hashed_password: str) -> Self:
+    def create(cls, username: str, hashed_password: str | None) -> Self:
         """new user factory"""
         user_id = uuid4()
         username_ = UserName(value=username)
