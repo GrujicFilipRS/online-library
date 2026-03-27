@@ -19,9 +19,10 @@ __pycache__
 .coverage
 coverage.xml
 htmlcov
-#*.code-workspace
-#typings
+*.code-workspace
+typings
 .idea
 node_modules
 clear_cache.py
 *.db
+.sqlite_data
