@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from ....config import get_config
 from ....shared.domain.ports import BaseRefreshSessionStorage
@@ -20,20 +20,21 @@ class AuthService(BaseAuthService):
         self.user_repo = user_repo
         self.refresh_sess_store = refresh_sess_store
 
-    async def login_user(self, user: User, password: str) -> tuple[str, str, str]:
-        if not await AuthUtils.verify_password(password, user.hashed_password):
-            raise InvalidCredentialsError("invalid credentials")
-
+    async def create_tokens_for_user(self, user_id: UUID) -> tuple[str, str, str]:
         sess_id = uuid4()
         jwt_id = uuid4()
         ttl_seconds = int(config.ACCESS_TTL.total_seconds())
 
-        access_token = await AuthUtils.create_access_token(user.user_id, sess_id)
-        refresh_token = await AuthUtils.create_refresh_token(
-            user.user_id, sess_id, jwt_id
-        )
+        access_token = await AuthUtils.create_access_token(user_id, sess_id)
+        refresh_token = await AuthUtils.create_refresh_token(user_id, sess_id, jwt_id)
         csrf_token = await AuthUtils.create_csrf_token(sess_id)
 
-        await self.refresh_sess_store.create(jwt_id, user.user_id, sess_id, ttl_seconds)
+        await self.refresh_sess_store.create(jwt_id, user_id, sess_id, ttl_seconds)
 
         return access_token, refresh_token, csrf_token
+
+    async def login_user(self, user: User, password: str) -> tuple[str, str, str]:
+        if not await AuthUtils.verify_password(password, user.hashed_password):
+            raise InvalidCredentialsError("invalid credentials")
+
+        return await self.create_tokens_for_user(user.user_id)
