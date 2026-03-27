@@ -12,9 +12,11 @@ class RegisterViaPasswordUseCase:
         """
         Creates a user, and returns the user, as well as all 3 tokens
         """
-        async with self.user_uow_factory() as uow:
-            user = await uow.user_service.create_user(username, password)
-            access_token, refresh_token, csrf_token = await uow.auth_service.login_user(
-                user, password
-            )
+        async with self.user_uow_factory() as user_uow:
+            user = await user_uow.user_service.create_user(username, password)
+            (
+                access_token,
+                refresh_token,
+                csrf_token,
+            ) = await user_uow.auth_service.login_user(user, password)
             return user, access_token, refresh_token, csrf_token

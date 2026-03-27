@@ -16,7 +16,7 @@ class ChangeAuthProviderIdentifierUseCase:
         provider: str,
         new_provider_user_id: str,
     ) -> None:
-        async with self.auth_account_uow_factory() as uow:
-            await uow.auth_account_service.change_auth_provider_identifier(
+        async with self.auth_account_uow_factory() as auth_account_uow:
+            await auth_account_uow.auth_account_service.change_auth_provider_identifier(
                 user_id, provider, new_provider_user_id
             )

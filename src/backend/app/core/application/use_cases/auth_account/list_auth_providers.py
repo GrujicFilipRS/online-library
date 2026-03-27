@@ -12,8 +12,10 @@ class ListAuthProvidersUseCase:
         self.auth_account_uow_factory = auth_account_uow_factory
 
     async def execute(self, user_id: UUID) -> list[AuthAccount]:
-        async with self.auth_account_uow_factory() as uow:
-            auth_accounts = await uow.auth_account_service.list_user_auth_providers(
-                user_id
+        async with self.auth_account_uow_factory() as auth_account_uow:
+            auth_accounts = (
+                await auth_account_uow.auth_account_service.list_user_auth_providers(
+                    user_id
+                )
             )
             return auth_accounts

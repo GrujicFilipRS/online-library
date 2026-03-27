@@ -11,10 +11,8 @@ class AutheticateUseCase:
         self.auth_account_uow_factory = auth_account_uow_factory
 
     async def execute(self, provider: str, provider_user_id: str) -> AuthAccount:
-        async with self.auth_account_uow_factory() as uow:
-            auth_account = (
-                await uow.auth_account_service.authenticate_via_auth_provider(
-                    provider, provider_user_id
-                )
+        async with self.auth_account_uow_factory() as auth_account_uow:
+            auth_account = await auth_account_uow.auth_account_service.authenticate_via_auth_provider(
+                provider, provider_user_id
             )
             return auth_account

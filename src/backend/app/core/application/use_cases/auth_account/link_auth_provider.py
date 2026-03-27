@@ -16,7 +16,7 @@ class LinkAuthProviderUseCase:
         provider: str,
         provider_user_id: str,
     ) -> None:
-        async with self.auth_account_uow_factory() as uow:
-            await uow.auth_account_service.link_auth_provider_to_user(
+        async with self.auth_account_uow_factory() as auth_account_uow:
+            await auth_account_uow.auth_account_service.link_auth_provider_to_user(
                 user_id, provider, provider_user_id
             )
