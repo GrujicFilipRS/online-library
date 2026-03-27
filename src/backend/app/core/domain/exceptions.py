@@ -64,3 +64,13 @@ class AuthProviderNotLinkedError(DomainError):
 @dataclass
 class AuthProviderUnlinkNotSafeError(DomainError):
     message = "AuthProviderUnlinkNotSafeError"
+
+
+@dataclass
+class AuthorAlreadyExistsError(DomainError):
+    message = "AuthorAlreadyExistsError"
+
+
+@dataclass
+class AuthorNotFoundError(DomainError):
+    message = "AuthorNotFoundError"
