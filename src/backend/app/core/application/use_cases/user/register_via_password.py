@@ -18,5 +18,5 @@ class RegisterViaPasswordUseCase:
                 access_token,
                 refresh_token,
                 csrf_token,
-            ) = await user_uow.auth_service.login_user(user, password)
+            ) = await user_uow.auth_service.create_tokens_for_user(user.user_id)
             return user, access_token, refresh_token, csrf_token
