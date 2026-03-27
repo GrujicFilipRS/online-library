@@ -14,13 +14,13 @@ class LinkAuthProviderUseCase:
     async def execute(
         self,
         user_id: UUID,
-        provider: str,
-        provider_user_id: str,
+        auth_provider: str,
+        auth_provider_user_id: str,
     ) -> AuthAccount:
         async with self.auth_account_uow_factory() as auth_account_uow:
             auth_account = (
                 await auth_account_uow.auth_account_service.link_auth_provider_to_user(
-                    user_id, provider, provider_user_id
+                    user_id, auth_provider, auth_provider_user_id
                 )
             )
             return auth_account
