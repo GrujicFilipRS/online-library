@@ -34,6 +34,9 @@ class AuthService(BaseAuthService):
         return access_token, refresh_token, csrf_token
 
     async def login_user(self, user: User, password: str) -> tuple[str, str, str]:
+        if user.hashed_password is None:
+            raise InvalidCredentialsError("invalid credentials")
+
         if not await AuthUtils.verify_password(password, user.hashed_password):
             raise InvalidCredentialsError("invalid credentials")
 
