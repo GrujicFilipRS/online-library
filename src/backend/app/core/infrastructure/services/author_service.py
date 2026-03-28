@@ -7,6 +7,7 @@ from ...domain.exceptions import (
 from ...domain.models import Author
 from ...domain.ports.repositories import BaseAuthorRepository
 from ...domain.ports.services import BaseAuthorService
+from ...domain.value_objects import AuthorName, ImageURL
 
 
 class AuthorService(BaseAuthorService):
@@ -33,11 +34,11 @@ class AuthorService(BaseAuthorService):
         authors = await self.author_repo.search_by_name(name, offset, limit)
         return authors
 
-    async def create_author(self, name, nationality, image_url):
+    async def create_author(self, name: str, nationality: str, image_url: str | None):
         existing_authors = await self.author_repo.search_by_name(
             name=name, offset=0, limit=1
         )
-        if existing_authors and existing_authors[0].name.lower() == name.lower():
+        if existing_authors and existing_authors[0].name.value.lower() == name.lower():
             raise AuthorAlreadyExistsError()
 
         author = Author.create(name=name, nationality=nationality, image_url=image_url)
@@ -55,9 +56,9 @@ class AuthorService(BaseAuthorService):
             raise AuthorNotFoundError()
         author = Author(
             author_id=author_id,
-            name=name or existing_author.name,
+            name=AuthorName(value=(name or existing_author.name.value)),
             nationality=nationality or existing_author.nationality,
-            image_url=image_url or existing_author.image_url,
+            image_url=ImageURL(value=(image_url or existing_author.image_url.value)),
         )
         await self.author_repo.save(author)
 
