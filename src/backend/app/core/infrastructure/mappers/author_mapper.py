@@ -1,5 +1,5 @@
 from ...domain.models import Author
-from ...domain.valu_objects import AuthroName, ImageURL
+from ...domain.value_objects import AuthorName, ImageURL
 from ..db_models import DBAuthor
 from ..dto import AuthorDTO
 
@@ -9,7 +9,7 @@ class AuthorMapper:
     def to_domain(db_author: DBAuthor) -> Author:
         return Author(
             author_id=db_author.author_id,
-            name=AuthroName(value=db_author.name),
+            name=AuthorName(value=db_author.name),
             nationality=db_author.nationality,
             image_url=ImageURL(value=db_author.image_url),
         )
