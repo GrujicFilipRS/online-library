@@ -34,7 +34,7 @@ class AuthorService(BaseAuthorService):
         authors = await self.author_repo.search_by_name(name, offset, limit)
         return authors
 
-    async def create_author(self, name: str, nationality: str, image_url: str | None):
+    async def create_author(self, name: str, nationality: str, image_url: str | None) -> Author:
         existing_authors = await self.author_repo.search_by_name(
             name=name, offset=0, limit=1
         )
@@ -43,6 +43,7 @@ class AuthorService(BaseAuthorService):
 
         author = Author.create(name=name, nationality=nationality, image_url=image_url)
         await self.author_repo.save(author)
+        return author
 
     async def update_author(
         self,
@@ -50,7 +51,7 @@ class AuthorService(BaseAuthorService):
         name: str | None,
         nationality: str | None,
         image_url: str | None,
-    ) -> None:
+    ) -> Author:
         existing_author = await self.author_repo.get_by_id(author_id)
         if not existing_author:
             raise AuthorNotFoundError()
@@ -61,6 +62,7 @@ class AuthorService(BaseAuthorService):
             image_url=ImageURL(value=(image_url or existing_author.image_url.value)),
         )
         await self.author_repo.save(author)
+        return author
 
     async def delete_author(self, author_id: UUID):
         existing_author = await self.author_repo.get_by_id(author_id)
