@@ -3,6 +3,7 @@ import pytest
 from src.backend.app.core.infrastructure.repositories.inmemory import (
     InMemoryAuthAccountRepository,
     InMemoryUserRepository,
+    InMemoryAuthorRepository,
 )
 from src.backend.app.shared.infra.inm_storage import InMemoryStorage
 
@@ -20,3 +21,9 @@ async def user_repo(inm_storage):
 @pytest.fixture
 async def auth_account_repo(inm_storage):
     return InMemoryAuthAccountRepository(inm_storage)
+
+
+@pytest.fixture
+async def author_repo(inm_storage):
+    return InMemoryAuthorRepository(inm_storage)
+

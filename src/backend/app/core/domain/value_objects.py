@@ -74,7 +74,7 @@ class AuthorName:
 @dataclass(frozen=True)
 class ImageURL:
     value: str | None
-    url_pattern = re.compile(r"(http[^\\s]+(jpg|jpeg|png|gif|webp))")
+    url_pattern = re.compile( r"^https?://\S+\.(?:jpg|jpeg|png|gif|webp)$", re.IGNORECASE)
 
     def __post_init__(self):
         if self.value is None:
