@@ -1,10 +1,12 @@
 from typing import Self
 from uuid import UUID, uuid4
 
+from ..value_objects import AuthorName, ImageURL
+
 
 class Author:
     def __init__(
-        self, author_id: UUID, name: str, nationality: str, image_url: str
+        self, author_id: UUID, name: AuthorName, nationality: str, image_url: ImageURL
     ) -> None:
         self.author_id = author_id
         self.name = name
@@ -13,11 +15,11 @@ class Author:
         return
 
     @classmethod
-    def create(cls, name: str, nationality: str, image_url: str) -> Self:
+    def create(cls, name: str, nationality: str, image_url: str | None) -> Self:
         author_id = uuid4()
         return cls(
             author_id,
-            name,
+            AuthorName(value=name),
             nationality,
-            image_url,
+            ImageURL(value=image_url),
         )

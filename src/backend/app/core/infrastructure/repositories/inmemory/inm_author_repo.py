@@ -21,7 +21,7 @@ class InMemoryAuthorRepository(BaseAuthorRepository):
     async def search_by_name(self, name: str, offset: int, limit: int) -> list[Author]:
         authors = self.inm_storage.authors
         authors_with_searched_name = [
-            a for a in authors if name.lower() in a.name.lower()
+            a for a in authors if name.lower() in a.name.value.lower()
         ]
         return authors_with_searched_name[offset : offset + limit]
 

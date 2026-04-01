@@ -17,4 +17,4 @@ class DBAuthor(Base):
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     nationality: Mapped[str] = mapped_column(String(255), nullable=False)
-    image_url: Mapped[str] = mapped_column(String(255), nullable=False)
+    image_url: Mapped[str] = mapped_column(String(255), nullable=True)

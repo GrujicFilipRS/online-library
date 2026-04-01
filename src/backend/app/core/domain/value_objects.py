@@ -1,8 +1,11 @@
+import re
 from dataclasses import dataclass
 
 from .exceptions import (
+    InvalidAuthorNameError,
     InvalidAuthProviderError,
     InvalidAuthProviderUserIdError,
+    InvalidImageURLError,
     InvalidLengthError,
     InvalidRoleError,
 )
@@ -57,3 +60,25 @@ class AuthProviderUserId:
             raise InvalidAuthProviderUserIdError(
                 "Auth provider user id must not be empty"
             )
+
+
+@dataclass(frozen=True)
+class AuthorName:
+    value: str
+
+    def __post_init__(self):
+        if not self.value.strip():
+            raise InvalidAuthorNameError("Author name must not be empty")
+
+
+@dataclass(frozen=True)
+class ImageURL:
+    value: str | None
+    url_pattern = re.compile( r"^https?://\S+\.(?:jpg|jpeg|png|gif|webp)$", re.IGNORECASE)
+
+    def __post_init__(self):
+        if self.value is None:
+            return
+
+        if not self.url_pattern.match(self.value):
+            raise InvalidImageURLError(f"Invalid image URL: {self.value}")

@@ -74,3 +74,13 @@ class AuthorAlreadyExistsError(DomainError):
 @dataclass
 class AuthorNotFoundError(DomainError):
     message = "AuthorNotFoundError"
+
+
+@dataclass
+class InvalidAuthorNameError(DomainError):
+    message = "InvalidAuthorNameError"
+
+
+@dataclass
+class InvalidImageURLError(DomainError):
+    message = "InvalidImageURLError"

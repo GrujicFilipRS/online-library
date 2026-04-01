@@ -24,7 +24,7 @@ class BaseAuthorService(ABC):
     @abstractmethod
     async def create_author(
         self, name: str, nationality: str, image_url: str | None
-    ) -> None: ...
+    ) -> Author: ...
 
     @abstractmethod
     async def update_author(
@@ -33,7 +33,7 @@ class BaseAuthorService(ABC):
         name: str | None,
         nationality: str | None,
         image_url: str | None,
-    ) -> None: ...
+    ) -> Author: ...
 
     @abstractmethod
     async def delete_author(self, author_id: UUID) -> None: ...

@@ -7,12 +7,16 @@ from src.backend.app.core.domain.exceptions import (
     InvalidAuthProviderUserIdError,
     InvalidLengthError,
     InvalidRoleError,
+    InvalidAuthorNameError,
+    InvalidImageURLError,
 )
 from src.backend.app.core.domain.value_objects import (
     AuthProvider,
     AuthProviderUserId,
     UserName,
     UserRole,
+    AuthorName,
+    ImageURL,
 )
 
 
@@ -56,3 +60,11 @@ async def test_auth_provider_user_id_ok():
 async def test_auth_provider_user_id_empty_raises():
     with pytest.raises(InvalidAuthProviderUserIdError):
         AuthProviderUserId("    ")
+
+async def test_author_name_invalid_raises():
+    with pytest.raises(InvalidAuthorNameError):
+        AuthorName("  ")
+
+async def test_image_url_invalid_raises():
+    with pytest.raises(InvalidImageURLError):
+        ImageURL("hi!")
